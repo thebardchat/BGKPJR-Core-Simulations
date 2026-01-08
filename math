@@ -1,0 +1,93 @@
+import math
+
+class BGKPJR_Engine:
+    def __init__(self):
+        # Constants
+        self.g0 = 9.81  # m/s^2 (Gravity)
+        self.R_earth = 6371000  # meters (Radius of Earth)
+        self.sea_level_density = 1.225  # kg/m^3 (Air density at sea level)
+        
+    def calculate_rail_parameters(self, target_velocity_mach, max_g_force, mass_kg):
+        """
+        Calculates the required rail length and power to achieve target velocity
+        under human or cargo G-force limits.
+        """
+        # Convert Mach to m/s (Speed of sound approx 343 m/s)
+        v_target = target_velocity_mach * 343.0
+        
+        # Convert Max G to acceleration (m/s^2)
+        acceleration = max_g_force * self.g0
+        
+        # Kinematics: v^2 = u^2 + 2as  =>  s = v^2 / 2a
+        # u (initial velocity) is 0
+        rail_length = (v_target ** 2) / (2 * acceleration)
+        
+        # Force Required: F = ma
+        force_newtons = mass_kg * acceleration
+        
+        # Work Done: W = F * d
+        work_joules = force_newtons * rail_length
+        
+        # Time on Rail: t = v / a
+        time_on_rail = v_target / acceleration
+        
+        # Power Required (Watts): P = W / t
+        power_watts = work_joules / time_on_rail
+        
+        return {
+            "target_velocity_ms": round(v_target, 2),
+            "rail_length_meters": round(rail_length, 2),
+            "rail_length_km": round(rail_length / 1000.0, 2),
+            "time_on_rail_sec": round(time_on_rail, 2),
+            "force_required_N": round(force_newtons, 2),
+            "power_required_MW": round(power_watts / 1_000_000.0, 2),
+            "required_acceleration_ms2": round(acceleration, 2)
+        }
+
+    def atmospheric_drag_at_launch(self, velocity_ms, area_m2, cd):
+        """
+        Calculates the instantaneous drag force at rail exit (Sea Level).
+        WARNING: High velocities at sea level result in massive thermal loads.
+        """
+        # Drag Equation: D = Cd * 0.5 * rho * V^2 * A
+        drag_force = cd * 0.5 * self.sea_level_density * (velocity_ms ** 2) * area_m2
+        return round(drag_force, 2)
+
+# --- EXECUTION BLOCK ---
+if __name__ == "__main__":
+    solver = BGKPJR_Engine()
+
+    print("--- BGKPJR PRELIMINARY PHYSICS ANALYSIS ---")
+    
+    # Scenario A: Human Crew Launch (Max 3-4G comfort, maybe 6G peak)
+    # Target: Mach 10 (Hypersonic Jump) - Rail assist, then scramjet/rocket takes over
+    print("\n[SCENARIO A: CREWED LAUNCH (Mach 10 Assist)]")
+    crew_results = solver.calculate_rail_parameters(
+        target_velocity_mach=10, 
+        max_g_force=4, 
+        mass_kg=15000  # 15 Ton Ship (Gryphon Class)
+    )
+    for k, v in crew_results.items():
+        print(f"{k}: {v}")
+
+    # Scenario B: Cargo/Fuel Slug (High G tolerance)
+    # Target: Mach 25 (Orbital Velocity approx)
+    print("\n[SCENARIO B: INERT CARGO (Mach 25 - Orbital Insertion)]")
+    cargo_results = solver.calculate_rail_parameters(
+        target_velocity_mach=25, 
+        max_g_force=20, # High G tolerance for inert cargo
+        mass_kg=5000   # 5 Ton Supply Pod
+    )
+    for k, v in cargo_results.items():
+        print(f"{k}: {v}")
+        
+    # Drag Check
+    print("\n[CRITICAL WARNING: ATMOSPHERIC INTERFACE]")
+    # Gryphon ship: Approx 4m diameter -> Area approx 12.5 m^2
+    # Streamlined Cd approx 0.15 (Hypersonic body)
+    drag_a = solver.atmospheric_drag_at_launch(crew_results['target_velocity_ms'], 12.5, 0.15)
+    print(f"Drag Force at Mach 10 Exit (Sea Level): {drag_a/1000} kN")
+    
+    if drag_a > crew_results['force_required_N']:
+        print("ALERT: Drag force exceeds Propulsion force at exit. Structural failure imminent.")
+        print("RECOMMENDATION: Vacuum tube enclosure for rail or lower exit velocity.")
