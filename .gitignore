@@ -1,0 +1,99 @@
+# BGKPJR Project .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# MATLAB
+*.asv
+*.m~
+*.autosave
+slprj/
+*.slxc
+
+# Simulation output (large files)
+data/trajectory_logs/*.csv
+data/monte_carlo/*.csv
+data/thermal_analysis/*.vtk
+!data/**/.gitkeep
+
+# CAD files (use Git LFS for these)
+*.step
+*.stp
+*.iges
+*.igs
+*.stl
+*.obj
+!design/**/.gitkeep
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+
+# Documentation build
+docs/_build/
+site/
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# Logs
+*.log
+logs/
+
+# Compiled binaries
+*.exe
+*.dll
+*.dylib
