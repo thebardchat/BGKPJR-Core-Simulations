@@ -7,6 +7,24 @@
 [![Simulation Status](https://img.shields.io/badge/Phase-Mathematical%20Validation-green.svg)]()
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)]()
 
+This project operates under the [ShaneTheBrain Constitution](https://github.com/thebardchat/constitution/blob/main/CONSTITUTION.md).
+
+---
+
+## Infrastructure
+
+All `thebardchat` repositories run on local-first hardware:
+
+| Component | Detail |
+|-----------|--------|
+| **Compute** | Raspberry Pi 5 (16 GB RAM) |
+| **Chassis** | Pironman 5-MAX by Sunfounder |
+| **Storage** | 2x WD Blue SN5000 2 TB NVMe — RAID 1 via mdadm |
+| **Core path** | `/mnt/shanebrain-raid/shanebrain-core/` |
+| **Networking** | Tailscale VPN across all nodes |
+
+> Pi before cloud. Privacy before convenience. — Pillar 4
+
 ---
 
 ## The Problem
@@ -251,28 +269,22 @@ Project BGKPJR Development Team
 
 ---
 
+## Built With
+
+| Partner | Role |
+|---------|------|
+| **Claude by Anthropic** · [claude.ai](https://claude.ai) | Co-built this entire ecosystem |
+| **Raspberry Pi 5** · [raspberrypi.com](https://www.raspberrypi.com) | Local compute backbone |
+| **Pironman 5-MAX** · [pironman.com](https://www.pironman.com) | NVMe RAID 1 chassis that made it real |
+
+> *"I could not have done any of this without them."*
+
+---
+
 *"We choose to go to the Moon not because it is easy, but because it is hard." - JFK*
 
 *"We choose to launch from a cannon not because it is conventional, but because it is efficient." - Project BGKPJR*
-# BGKPJR-Core-Simulations
-Patent Application
-United States Patent and Trademark Office
 
-Title of Invention
-Brazelton Gryphon Kepler Propulsion Jump Revolution (BGKPJR) Launch Architecture
+---
 
-Abstract
-A multi-stage space launch system comprising a terrestrial magnetic levitation linear accelerator track inclined at 15 to 45 degrees, a hypersonic lifting-body spacecraft ("Gryphon"), and an orbital solar sail propulsion module ("Kepler"). The system utilizes a partial-vacuum tube to accelerate the payload to velocities exceeding Mach 3 prior to atmospheric interaction, significantly reducing the onboard chemical propellant mass fraction required for orbital insertion as defined by the Tsiolkovsky Rocket Equation.
-
-Claim 1
-A launch system wherein the initial velocity (Delta-V) is provided by ground-based electromagnetic forces rather than onboard chemical combustion, utilizing a superconducting maglev track to achieve hypersonic exit velocities.
-
-Claim 2
-A spacecraft comprising variable geometry "Gryphon" wings that remain retracted during tube acceleration to maximize bore efficiency and deploy upon exit to generate aerodynamic lift, converting ballistic trajectory into a lifting ascent.
-
-Shane Brazelton
-
-Inventor Signature
-Date: April 18, 2025
-
-Docket: BGKPJR-001
+*[@thebardchat](https://github.com/thebardchat) · Hazel Green, Alabama*
