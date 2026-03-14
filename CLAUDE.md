@@ -116,3 +116,8 @@ Built with Claude (Anthropic) · Runs on Raspberry Pi 5 + Pironman 5-MAX
 ---
 
 *Ratified: March 2026 · [@thebardchat](https://github.com/thebardchat) · Hazel Green, Alabama*
+
+## Claude Code Rules
+- Commit and push directly to `main`. Do NOT create branches.
+- Run build/test commands before committing.
+- Update CLAUDE.md session log before final commit.
