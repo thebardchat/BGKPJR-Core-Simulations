@@ -1,11 +1,14 @@
+<div align="center"><img src=".github/assets/banner.png" alt="BGKPJR Core Simulations" width="100%"></div>
+
+[![Constitution](https://img.shields.io/badge/Constitution-ShaneTheBrain-blue)](https://github.com/thebardchat/constitution)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Simulation Status](https://img.shields.io/badge/Phase-Mathematical%20Validation-green.svg)]()
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)]()
+
 # BGKPJR Launch Architecture
 ### Brazelton Gryphon Kepler Propulsion Jump Revolution
 
 > *Reducing orbital access costs by 90% through ground-based acceleration and aerodynamic efficiency.*
-
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Simulation Status](https://img.shields.io/badge/Phase-Mathematical%20Validation-green.svg)]()
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)]()
 
 This project operates under the [ShaneTheBrain Constitution](https://github.com/thebardchat/constitution/blob/main/CONSTITUTION.md).
 
@@ -301,3 +304,11 @@ If what I'm building matters to you — local AI for real people, tools for the 
 - **Star the repos** — visibility matters for projects like this
 
 Built by **Shane Brazelton** · Co-built with **Claude** (Anthropic) · Hazel Green, Alabama
+
+---
+
+<div align="center">
+
+*Part of the [ShaneBrain Ecosystem](https://github.com/thebardchat) · Built under the [Constitution](https://github.com/thebardchat/constitution)*
+
+</div>
