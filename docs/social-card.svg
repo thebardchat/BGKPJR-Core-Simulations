@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000010;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#000830;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#00050a;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="thrust" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#00b4ff;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#00b4ff;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="brightglow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Stars -->
+  <g fill="white">
+    <circle cx="150" cy="80" r="1.5" opacity="0.8"/>
+    <circle cx="280" cy="140" r="1" opacity="0.6"/>
+    <circle cx="420" cy="60" r="1.5" opacity="0.7"/>
+    <circle cx="550" cy="100" r="1" opacity="0.5"/>
+    <circle cx="680" cy="50" r="2" opacity="0.8"/>
+    <circle cx="850" cy="90" r="1" opacity="0.6"/>
+    <circle cx="950" cy="40" r="1.5" opacity="0.9"/>
+    <circle cx="1100" cy="110" r="1" opacity="0.7"/>
+    <circle cx="1050" cy="70" r="2" opacity="0.5"/>
+    <circle cx="200" cy="200" r="1" opacity="0.4"/>
+    <circle cx="750" cy="160" r="1.5" opacity="0.6"/>
+    <circle cx="320" cy="300" r="1" opacity="0.3"/>
+    <circle cx="1000" cy="200" r="1" opacity="0.5"/>
+  </g>
+
+  <!-- Spacecraft (Gryphon silhouette) -->
+  <g transform="translate(880, 120)" filter="url(#glow)">
+    <!-- Nose -->
+    <polygon points="60,0 80,80 40,80" fill="#1a3060" stroke="#00b4ff" stroke-width="1.5"/>
+    <!-- Body -->
+    <rect x="30" y="80" width="60" height="120" rx="4" fill="#0a1a40" stroke="#00b4ff" stroke-width="1.5"/>
+    <!-- Wings -->
+    <polygon points="0,120 30,100 30,160" fill="#0a1a40" stroke="#0080c0" stroke-width="1.5"/>
+    <polygon points="120,120 90,100 90,160" fill="#0a1a40" stroke="#0080c0" stroke-width="1.5"/>
+    <!-- Window -->
+    <circle cx="60" cy="110" r="12" fill="none" stroke="#00b4ff" stroke-width="2"/>
+    <circle cx="60" cy="110" r="7" fill="#001040" stroke="#0080c0" stroke-width="1"/>
+    <!-- Engine glow -->
+    <ellipse cx="60" cy="200" rx="15" ry="8" fill="#00b4ff" opacity="0.6"/>
+    <!-- Thrust plume -->
+    <polygon points="45,200 75,200 85,280 35,280" fill="url(#thrust)" opacity="0.5"/>
+  </g>
+
+  <!-- Maglev track lines -->
+  <g stroke="#1e3060" stroke-width="2" opacity="0.6">
+    <line x1="0" y1="480" x2="1200" y2="480"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <!-- Cross ties -->
+    <line x1="100" y1="475" x2="100" y2="505"/><line x1="150" y1="475" x2="150" y2="505"/>
+    <line x1="200" y1="475" x2="200" y2="505"/><line x1="250" y1="475" x2="250" y2="505"/>
+    <line x1="300" y1="475" x2="300" y2="505"/><line x1="350" y1="475" x2="350" y2="505"/>
+    <line x1="400" y1="475" x2="400" y2="505"/><line x1="450" y1="475" x2="450" y2="505"/>
+    <line x1="500" y1="475" x2="500" y2="505"/><line x1="550" y1="475" x2="550" y2="505"/>
+    <line x1="600" y1="475" x2="600" y2="505"/><line x1="650" y1="475" x2="650" y2="505"/>
+    <line x1="700" y1="475" x2="700" y2="505"/><line x1="750" y1="475" x2="750" y2="505"/>
+  </g>
+
+  <!-- Electric arc along track -->
+  <polyline points="0,490 50,488 100,492 150,487 200,493 250,487 300,491 350,489 400,493 450,487 500,491 550,489 600,490 650,487 700,492 750,490" fill="none" stroke="#00b4ff" stroke-width="1.5" opacity="0.4" filter="url(#glow)"/>
+
+  <!-- Corner brackets -->
+  <g stroke="#0080c0" stroke-width="2" fill="none" opacity="0.7">
+    <polyline points="20,20 20,70 70,70"/>
+    <polyline points="1180,20 1180,70 1130,70"/>
+    <polyline points="20,610 20,560 70,560"/>
+    <polyline points="1180,610 1180,560 1130,560"/>
+  </g>
+
+  <!-- Patent badge -->
+  <rect x="100" y="30" width="140" height="28" rx="3" fill="rgba(250,204,21,0.1)" stroke="rgba(250,204,21,0.4)"/>
+  <text x="170" y="49" text-anchor="middle" font-family="monospace" font-size="12" fill="#fbbf24">★ PATENT FILED</text>
+
+  <!-- Title -->
+  <text x="100" y="155" font-family="monospace" font-size="68" font-weight="bold" fill="#00b4ff" filter="url(#brightglow)">BGKPJR</text>
+  <text x="100" y="220" font-family="monospace" font-size="24" fill="#60a5fa">Core Simulations</text>
+
+  <!-- Full name -->
+  <text x="100" y="260" font-family="monospace" font-size="13" fill="#1e3a8a">Brazelton Gryphon Kepler Propulsion Jump Revolution</text>
+
+  <!-- Divider -->
+  <line x1="100" y1="280" x2="760" y2="280" stroke="#0080c0" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Tagline -->
+  <text x="100" y="310" font-family="monospace" font-size="18" fill="#38bdf8">Electromagnetic launch architecture · Gryphon spacecraft design</text>
+
+  <!-- Feature chips -->
+  <g font-family="monospace" font-size="13">
+    <rect x="100" y="335" width="95" height="28" rx="4" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="147" y="354" text-anchor="middle" fill="#60a5fa">LQR</text>
+
+    <rect x="205" y="335" width="95" height="28" rx="4" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="252" y="354" text-anchor="middle" fill="#60a5fa">MPC</text>
+
+    <rect x="310" y="335" width="120" height="28" rx="4" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="370" y="354" text-anchor="middle" fill="#60a5fa">MAGLEV</text>
+
+    <rect x="440" y="335" width="130" height="28" rx="4" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="505" y="354" text-anchor="middle" fill="#60a5fa">AERO SIM</text>
+
+    <rect x="580" y="335" width="120" height="28" rx="4" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <text x="640" y="354" text-anchor="middle" fill="#60a5fa">GRYPHON</text>
+  </g>
+
+  <!-- Stats -->
+  <g font-family="monospace">
+    <text x="100" y="400" font-size="12" fill="#0ea5e9">EM LAUNCH VELOCITY</text>
+    <rect x="100" y="408" width="500" height="10" rx="5" fill="#001030" stroke="#1e3a8a" stroke-width="1"/>
+    <rect x="100" y="408" width="450" height="10" rx="5" fill="#0ea5e9" opacity="0.7"/>
+  </g>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="580" width="1200" height="50" fill="#000010" opacity="0.95"/>
+  <line x1="0" y1="580" x2="1200" y2="580" stroke="#0080c0" stroke-width="1" opacity="0.5"/>
+  <text x="30" y="611" font-family="monospace" font-size="13" fill="#1e3a8a">github.com/thebardchat/BGKPJR-Core-Simulations</text>
+  <text x="1170" y="611" text-anchor="end" font-family="monospace" font-size="13" fill="#1e3a8a">Built by Shane + Claude Anthropic</text>
+</svg>
