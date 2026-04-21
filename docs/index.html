@@ -1272,10 +1272,122 @@
 
 <div class="section-divider"></div>
 
+<!-- ═══════════════════════════════════════════════════════ AI PEER REVIEW -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">07 · AI Peer Review</div>
+    <h2 class="sec-title">AI Agent Expert Simulation Chain</h2>
+    <p class="sec-desc">
+      To pressure-test the BGKPJR architecture before seeking real-world expert feedback,
+      Shane Brazelton built a sequential chain of AI agents inside Claude (Anthropic).
+      Each agent was trained on a real expert's published body of work, papers, known positions,
+      and domain methodology — then given the BGKPJR case file to analyze.
+      The goal: test how accurately an AI trained on an expert's knowledge base could
+      simulate that expert's analytical approach and domain conclusions.
+    </p>
+
+    <div style="background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:3px;padding:1.5rem 2rem;margin-bottom:2.5rem;font-family:var(--font-mono);font-size:0.82rem;color:#c8a84b;line-height:1.8;">
+      <strong style="color:var(--accent-gold);display:block;margin-bottom:0.5rem;">EXPLICIT DISCLAIMER</strong>
+      The individuals named below — Dr. Ian McNab, Dr. Iain Boyd, and Gwynne Shotwell — are real people
+      who have <strong>no affiliation with Project BGKPJR</strong>. They did not write these reviews.
+      These documents contain no actual words or opinions from them. These are AI simulations trained on
+      each person's published body of work. Full disclaimers are in every document.
+      <strong style="display:block;margin-top:0.75rem;">The real individuals have since been contacted directly to get their actual feedback.</strong>
+    </div>
+
+    <div style="background:rgba(0,5,20,0.9);border:1px solid var(--border-blue);border-radius:3px;padding:2rem;margin-bottom:2rem;font-family:var(--font-mono);overflow-x:auto;">
+      <div style="font-size:0.65rem;letter-spacing:0.2em;color:var(--text-muted);margin-bottom:1.5rem;text-transform:uppercase;">// Sequential review chain — each agent received all prior analysis</div>
+<pre style="font-family:'Share Tech Mono',monospace;font-size:clamp(0.6rem,1.4vw,0.82rem);color:var(--accent-cyan);line-height:1.8;white-space:pre;">
+[BGKPJR Case File + Feasibility Report]
+              ↓
+  ┌─────────────────────────────────────────────┐
+  │  AGENT 1 · McNab (EM Propulsion)            │
+  │  Trained on: 200+ publications, 15 patents  │
+  │  Finding: Railgun → Coilgun (LSM) required  │
+  │  Correction: $44B → $34.6B cost revision    │
+  └─────────────────────────────────────────────┘
+              ↓ (original + McNab analysis)
+  ┌─────────────────────────────────────────────┐
+  │  AGENT 2 · Boyd (Hypersonic Aerodynamics)   │
+  │  Trained on: 300+ CFD publications, NASA    │
+  │  Finding: Thermal load 3× underestimated    │
+  │  Correction: 15 MW/m² → 42 MW/m², nose redo│
+  └─────────────────────────────────────────────┘
+              ↓ (original + McNab + Boyd analysis)
+  ┌─────────────────────────────────────────────┐
+  │  AGENT 3 · Shotwell (Systems Integration)   │
+  │  Trained on: Falcon 9, Dragon, Starship dev │
+  │  Finding: Waterfall approach will fail      │
+  │  Output: Phase 0→3 roadmap, $50M subscale   │
+  └─────────────────────────────────────────────┘
+              ↓
+  [Architecture updated. Real experts contacted.]
+</pre>
+    </div>
+
+    <div class="stage-grid">
+      <div class="stage-card" style="border-color:rgba(0,180,255,0.3);">
+        <div class="stage-num">AGENT 01 · EM PROPULSION</div>
+        <div class="stage-title">McNab Simulation</div>
+        <ul class="stage-list">
+          <li>Railgun architecture fails — 2.71 MA quenches YBCO superconductors</li>
+          <li>Correct architecture: Coilgun (Linear Synchronous Motor)</li>
+          <li>3,840 coil sets, 97,000 tonnes copper, contactless operation</li>
+          <li>Efficiency corrected: 20% → 60%</li>
+          <li>Cost revised: $44B → $34.6B</li>
+        </ul>
+        <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/blob/main/docs/ai-peer-review/01-mcnab-em-propulsion.md"
+           target="_blank" class="stage-mach" style="text-decoration:none;display:inline-block;margin-top:1rem;">
+          Read Full Simulation →
+        </a>
+      </div>
+      <div class="stage-card" style="border-color:rgba(0,180,255,0.3);">
+        <div class="stage-num">AGENT 02 · HYPERSONIC AERO</div>
+        <div class="stage-title">Boyd Simulation</div>
+        <ul class="stage-list">
+          <li>Peak heating 15 MW/m² → 42 MW/m² (3× underestimate)</li>
+          <li>Nose radius 0.5m → 1.2m minimum for survivability</li>
+          <li>Passive tiles insufficient — ablative + active cooling hybrid required</li>
+          <li>UHTC leading edges, ZrB₂/SiC composites to 2,200°C</li>
+          <li>+$800M thermal budget, +12% vehicle dry mass</li>
+        </ul>
+        <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/blob/main/docs/ai-peer-review/02-boyd-hypersonics.md"
+           target="_blank" class="stage-mach" style="text-decoration:none;display:inline-block;margin-top:1rem;">
+          Read Full Simulation →
+        </a>
+      </div>
+      <div class="stage-card" style="border-color:rgba(0,180,255,0.3);">
+        <div class="stage-num">AGENT 03 · SYSTEMS INTEGRATION</div>
+        <div class="stage-title">Shotwell Simulation</div>
+        <ul class="stage-list">
+          <li>"Build a little, test a little, learn a lot"</li>
+          <li>Phase 0: $50M · 100m subscale · validate coilgun physics</li>
+          <li>Phase 1: $200M · 1km track · power system integration</li>
+          <li>Phase 2: $2B · 5km · full vehicle, iterate through failures</li>
+          <li>Phase 3: $32B+ · operational only after Phase 2 success</li>
+        </ul>
+        <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/blob/main/docs/ai-peer-review/03-shotwell-integration.md"
+           target="_blank" class="stage-mach" style="text-decoration:none;display:inline-block;margin-top:1rem;">
+          Read Full Simulation →
+        </a>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem">
+      <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/tree/main/docs/ai-peer-review"
+         class="btn btn-secondary" target="_blank" style="display:inline-flex;">
+        View All Simulations + Methodology →
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
 <!-- ═══════════════════════════════════════════════════════ CONTROL SYSTEMS -->
 <section class="section">
   <div class="container">
-    <div class="sec-label">07 · Control Systems</div>
+    <div class="sec-label">08 · Control Systems</div>
     <h2 class="sec-title">Guidance, Navigation & Control</h2>
     <p class="sec-desc">
       BGKPJR operates in two fundamentally different flight regimes — each requiring a distinct control architecture.
@@ -1325,7 +1437,7 @@
 <!-- ═══════════════════════════════════════════════════════ REPO STRUCTURE -->
 <section class="section">
   <div class="container">
-    <div class="sec-label">08 · Repository</div>
+    <div class="sec-label">09 · Repository</div>
     <h2 class="sec-title">Codebase Structure</h2>
     <p class="sec-desc">Python physics engine, Jupyter analysis notebooks, MATLAB/Simulink models, and full aerodynamic documentation.</p>
 
