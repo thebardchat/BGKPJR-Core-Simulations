@@ -4,237 +4,1567 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BGKPJR Core Simulations — Electromagnetic Launch Architecture</title>
-  <meta name="description" content="Brazelton Gryphon Kepler Propulsion Jump Revolution — electromagnetic launch architecture. LQR/MPC control systems, maglev track specs, Gryphon spacecraft design. Patent filed."/>
+  <meta name="description" content="Brazelton Gryphon Kepler Propulsion Jump Revolution — patent-filed electromagnetic launch architecture. Maglev track, LH₂ VacuumGate seal, Gryphon spacecraft, Kepler solar sail. LQR/MPC control systems, Python physics simulations."/>
+  <meta property="og:title" content="BGKPJR Core Simulations"/>
+  <meta property="og:description" content="Reducing orbital access costs by 90% through ground-based electromagnetic acceleration, aerodynamic ascent, and solar sail transit."/>
   <meta property="og:image" content="social-card.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]},svg:{fontCache:'global'}};</script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#000010;color:#e0f0ff;font-family:'Courier New',monospace;overflow-x:hidden;min-height:100vh;padding-bottom:60px}
-    canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-    .content{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2rem 1.5rem}
-    .hero{text-align:center;padding:4rem 0 2rem}
-    .hero-badge{display:inline-block;background:rgba(0,180,255,0.1);border:1px solid rgba(0,180,255,0.4);color:#00b4ff;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;padding:0.4rem 1.2rem;border-radius:2px;margin-bottom:2rem}
-    h1{font-size:clamp(2.2rem,6vw,4rem);font-weight:900;letter-spacing:0.05em;line-height:1.1;color:#fff;text-shadow:0 0 40px rgba(0,180,255,0.5),0 0 80px rgba(0,100,200,0.3)}
-    .subtitle{font-size:1.1rem;color:#60a5fa;margin:1rem 0 2rem;letter-spacing:0.1em}
-    .patent-badge{display:inline-block;background:linear-gradient(135deg,rgba(250,204,21,0.15),rgba(250,204,21,0.05));border:1px solid rgba(250,204,21,0.4);color:#fbbf24;font-size:0.8rem;letter-spacing:0.15em;padding:0.5rem 1.5rem;border-radius:3px;margin-bottom:3rem}
-    .referral-bar{border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.05);border-radius:4px;padding:0.8rem 1.5rem;text-align:center;margin:0 auto 2rem;max-width:600px;font-size:0.8rem}
-    .referral-bar a{color:#f59e0b}
-    .section{margin:3rem 0;padding:2rem;background:rgba(0,20,60,0.4);border:1px solid rgba(0,100,200,0.3);border-radius:4px}
-    .section-title{font-size:0.85rem;letter-spacing:0.25em;text-transform:uppercase;color:#3b82f6;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem}
-    .section-title::after{content:'';flex:1;height:1px;background:rgba(59,130,246,0.3)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem}
-    .card{background:rgba(0,10,40,0.6);border:1px solid rgba(0,100,200,0.25);border-radius:4px;padding:1.5rem;text-align:center;transition:border-color 0.3s,transform 0.3s}
-    .card:hover{border-color:rgba(0,180,255,0.5);transform:translateY(-2px)}
-    .card-icon{font-size:2.5rem;margin-bottom:0.8rem}
-    .card-label{font-size:0.75rem;color:#60a5fa;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem}
-    .card-value{font-size:1.6rem;font-weight:bold;color:#00b4ff}
-    .card-desc{font-size:0.8rem;color:#4b6a9a;margin-top:0.5rem}
-    .feature-list{list-style:none}
-    .feature-list li{padding:0.6rem 0;border-bottom:1px solid rgba(0,60,120,0.3);color:#93c5fd;font-size:0.9rem;display:flex;gap:0.8rem}
-    .feature-list li::before{content:'▸';color:#0ea5e9;flex-shrink:0}
-    .tech-tags{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1rem}
-    .tag{background:rgba(0,30,80,0.6);border:1px solid rgba(0,100,200,0.3);color:#60a5fa;font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:2px;letter-spacing:0.1em}
-    .links{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:2rem 0}
-    .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 2rem;font-family:monospace;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:all 0.2s}
-    .btn-primary{background:rgba(0,100,200,0.3);border:1px solid rgba(0,180,255,0.5);color:#00b4ff}
-    .btn-primary:hover{background:rgba(0,100,200,0.5)}
-    .btn-secondary{background:rgba(0,0,0,0.3);border:1px solid rgba(0,60,120,0.5);color:#60a5fa}
-    .btn-secondary:hover{background:rgba(0,20,60,0.5)}
-    .footer{text-align:center;padding:2rem 0 1rem;font-size:0.8rem;color:#1e3a5f;border-top:1px solid rgba(0,60,120,0.3);margin-top:3rem}
-    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem}
-    .stat-item{text-align:center;padding:1rem;background:rgba(0,10,40,0.5);border:1px solid rgba(0,60,120,0.3);border-radius:3px}
-    .stat-num{font-size:2rem;font-weight:bold;color:#38bdf8}
-    .stat-label{font-size:0.7rem;color:#1e3a8a;letter-spacing:0.15em;text-transform:uppercase;margin-top:0.3rem}
+    :root {
+      --bg-deep: #00000e;
+      --bg-mid: #000820;
+      --bg-card: rgba(0, 12, 40, 0.75);
+      --bg-card-hover: rgba(0, 20, 60, 0.85);
+      --accent-blue: #00b4ff;
+      --accent-cyan: #00e5ff;
+      --accent-gold: #fbbf24;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-green: #22c55e;
+      --text-primary: #e2f0ff;
+      --text-secondary: #7ab3d4;
+      --text-muted: #2a4a6b;
+      --border-blue: rgba(0, 180, 255, 0.25);
+      --border-blue-bright: rgba(0, 180, 255, 0.55);
+      --border-gold: rgba(251, 191, 36, 0.4);
+      --glow-blue: 0 0 20px rgba(0, 180, 255, 0.3), 0 0 60px rgba(0, 100, 200, 0.15);
+      --glow-gold: 0 0 20px rgba(251, 191, 36, 0.35);
+      --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+      --font-display: 'Orbitron', monospace;
+      --font-body: 'Space Mono', monospace;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* ── CANVAS ── */
+    #starfield {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* ── LAYOUT ── */
+    .page { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    .section { padding: 5rem 0; }
+    .section + .section { padding-top: 0; }
+
+    /* ── REFERRAL TOP BAR ── */
+    .ref-top {
+      background: linear-gradient(90deg, rgba(0,30,70,0.95), rgba(0,50,100,0.95));
+      border-bottom: 1px solid var(--border-blue);
+      padding: 0.65rem 1.5rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      position: relative; z-index: 10;
+    }
+    .ref-top a { color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
+    .ref-top a:hover { text-decoration: underline; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      position: relative;
+    }
+
+    .hero-badges {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      justify-content: center; margin-bottom: 2.5rem;
+    }
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.4rem 1.2rem;
+      border-radius: 2px;
+    }
+    .badge-blue {
+      background: rgba(0, 180, 255, 0.08);
+      border: 1px solid var(--border-blue-bright);
+      color: var(--accent-blue);
+    }
+    .badge-gold {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid var(--border-gold);
+      color: var(--accent-gold);
+      box-shadow: var(--glow-gold);
+      animation: pulse-gold 3s ease-in-out infinite;
+    }
+    @keyframes pulse-gold {
+      0%, 100% { box-shadow: 0 0 8px rgba(251,191,36,0.3); }
+      50% { box-shadow: 0 0 24px rgba(251,191,36,0.6), 0 0 48px rgba(251,191,36,0.2); }
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: #fff;
+      text-shadow: 0 0 60px rgba(0,180,255,0.6), 0 0 120px rgba(0,100,200,0.3);
+      margin-bottom: 0.5rem;
+    }
+    .hero-sub-accent {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 3vw, 1.6rem);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      color: var(--accent-blue);
+      margin-bottom: 1rem;
+    }
+    .hero-fullname {
+      font-family: var(--font-mono);
+      font-size: clamp(0.75rem, 2vw, 0.95rem);
+      letter-spacing: 0.12em;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+    .hero-tagline {
+      font-family: var(--font-mono);
+      font-size: clamp(0.8rem, 2vw, 1.05rem);
+      color: #60a5fa;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+    .hero-tagline strong { color: var(--accent-cyan); }
+
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+
+    /* ── SCROLL INDICATOR ── */
+    .scroll-hint {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--accent-blue), transparent);
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: rgba(0, 100, 200, 0.25);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      box-shadow: var(--glow-blue);
+    }
+    .btn-primary:hover {
+      background: rgba(0, 100, 200, 0.45);
+      box-shadow: 0 0 30px rgba(0,180,255,0.5), 0 0 60px rgba(0,100,200,0.25);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 100, 200, 0.4);
+      color: var(--text-secondary);
+    }
+    .btn-secondary:hover {
+      border-color: var(--border-blue-bright);
+      color: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+    .btn-gold {
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid var(--border-gold);
+      color: var(--accent-gold);
+    }
+    .btn-gold:hover {
+      background: rgba(251, 191, 36, 0.2);
+      box-shadow: var(--glow-gold);
+      transform: translateY(-1px);
+    }
+
+    /* ── SECTION HEADERS ── */
+    .sec-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .sec-label::before { content: '//'; color: var(--text-muted); }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--border-blue), transparent); max-width: 200px; }
+
+    .sec-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .sec-desc {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 720px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+    .card:hover {
+      border-color: var(--border-blue-bright);
+      box-shadow: var(--glow-blue);
+      transform: translateY(-2px);
+    }
+    .card-gold {
+      border-color: var(--border-gold);
+    }
+    .card-gold:hover { box-shadow: var(--glow-gold); }
+
+    /* ── STAT CARDS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--glow-blue); }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-unit { font-size: 1rem; color: var(--accent-blue); }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .stat-sub { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; font-family: var(--font-mono); }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .arch-diagram {
+      background: rgba(0, 5, 20, 0.9);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 2rem;
+      overflow-x: auto;
+      position: relative;
+    }
+    .arch-diagram::before {
+      content: 'LAUNCH SEQUENCE DIAGRAM';
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .arch-ascii {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(0.55rem, 1.3vw, 0.8rem);
+      line-height: 1.5;
+      color: var(--accent-cyan);
+      white-space: pre;
+    }
+
+    /* ── STAGE CARDS ── */
+    .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .stage-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 1.75rem;
+      backdrop-filter: blur(8px);
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .stage-card:hover { transform: translateY(-3px); box-shadow: var(--glow-blue); }
+    .stage-num {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+    }
+    .stage-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .stage-list { list-style: none; }
+    .stage-list li {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(0, 60, 120, 0.3);
+      display: flex; gap: 0.75rem;
+      line-height: 1.5;
+    }
+    .stage-list li::before { content: '▸'; color: var(--accent-blue); flex-shrink: 0; }
+    .stage-list li:last-child { border-bottom: none; }
+    .stage-mach {
+      display: inline-block;
+      margin-top: 1rem;
+      background: rgba(0, 180, 255, 0.1);
+      border: 1px solid var(--border-blue);
+      padding: 0.3rem 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      border-radius: 2px;
+    }
+
+    /* ── VACUUMGATE ── */
+    .vacuumgate {
+      background: linear-gradient(135deg, rgba(0,5,25,0.95), rgba(5,0,20,0.95));
+      border: 1px solid var(--border-gold);
+      border-radius: 3px;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .vacuumgate::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    }
+    .vacuumgate::after {
+      content: 'PATENT IP';
+      position: absolute; top: 1rem; right: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--accent-gold);
+      border: 1px solid var(--border-gold);
+      padding: 0.2rem 0.6rem;
+    }
+    .vg-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+    }
+    .vg-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-amber);
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+    }
+    .vg-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .vg-step {
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      border-radius: 2px;
+      padding: 1.25rem;
+    }
+    .vg-step-letter {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      margin-bottom: 0.5rem;
+    }
+    .vg-step-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .vg-quote {
+      background: rgba(0, 0, 0, 0.4);
+      border-left: 3px solid var(--accent-gold);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: #d4b89a;
+      line-height: 1.8;
+      font-style: italic;
+    }
+    .vg-quote strong { color: var(--accent-gold); font-style: normal; }
+    .vg-conclusion {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px dashed rgba(251, 191, 36, 0.3);
+      padding: 1rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-gold);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SPEC TABLES ── */
+    .spec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .spec-table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .spec-table-wrap:hover { box-shadow: var(--glow-blue); }
+    .spec-table-title {
+      background: rgba(0, 100, 200, 0.2);
+      border-bottom: 1px solid var(--border-blue);
+      padding: 0.9rem 1.25rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .spec-icon { font-size: 1.1rem; }
+    table.spec { width: 100%; border-collapse: collapse; }
+    table.spec tr { border-bottom: 1px solid rgba(0, 60, 120, 0.35); transition: background 0.15s; }
+    table.spec tr:last-child { border-bottom: none; }
+    table.spec tr:hover { background: rgba(0, 30, 80, 0.4); }
+    table.spec td {
+      padding: 0.65rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      vertical-align: top;
+    }
+    table.spec td:first-child { color: var(--text-secondary); width: 45%; }
+    table.spec td:last-child { color: var(--accent-cyan); font-weight: 700; }
+
+    /* ── MATH SECTION ── */
+    .math-block {
+      background: rgba(0, 5, 20, 0.95);
+      border: 1px solid var(--border-blue);
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 2px;
+      padding: 1.75rem 2rem;
+      margin: 1.5rem 0;
+      font-family: var(--font-mono);
+      position: relative;
+      overflow: hidden;
+    }
+    .math-block::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--accent-blue);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .eq {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(0.85rem, 2vw, 1.05rem);
+      color: var(--accent-cyan);
+      line-height: 2;
+      display: block;
+      margin: 0.5rem 0;
+    }
+    .eq-comment { color: var(--text-muted); font-size: 0.8rem; }
+    .math-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    @media (max-width: 600px) { .math-compare { grid-template-columns: 1fr; } }
+    .math-col {
+      background: rgba(0, 10, 35, 0.8);
+      border: 1px solid var(--border-blue);
+      border-radius: 2px;
+      padding: 1.25rem;
+    }
+    .math-col-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .math-col.good { border-color: rgba(34, 197, 94, 0.3); }
+    .math-col.good .math-col-title { color: var(--accent-green); }
+    .math-val {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+    .math-sub { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.6; font-family: var(--font-mono); }
+
+    /* ── ENGINEERING HONESTY ── */
+    .honesty-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .honesty-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .honesty-check {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+    .check-pass { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--accent-green); }
+    .check-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--accent-amber); }
+    .honesty-text { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; }
+
+    .barriers-list { list-style: none; margin: 2rem 0; }
+    .barrier-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      padding: 1.25rem;
+      border-bottom: 1px solid rgba(0, 40, 80, 0.5);
+      transition: background 0.15s;
+    }
+    .barrier-item:last-child { border-bottom: none; }
+    .barrier-item:hover { background: rgba(0, 20, 60, 0.4); }
+    .barrier-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      line-height: 1;
+      width: 2rem;
+      text-align: center;
+    }
+    .barrier-content {}
+    .barrier-title {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+    .barrier-desc {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .barrier-status {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .status-critical { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #ef4444; }
+    .status-severe { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: var(--accent-amber); }
+    .status-resolved { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--accent-green); }
+
+    /* ── CONTROL SYSTEMS ── */
+    .ctrl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .ctrl-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+    .ctrl-card:hover { transform: translateY(-3px); box-shadow: var(--glow-blue); }
+    .ctrl-acronym {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--accent-blue);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .ctrl-full {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+    .ctrl-phase {
+      display: inline-block;
+      background: rgba(0, 180, 255, 0.1);
+      border: 1px solid var(--border-blue);
+      padding: 0.25rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+    .ctrl-desc { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ── REPO TREE ── */
+    .repo-tree {
+      background: rgba(0, 5, 20, 0.95);
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+      padding: 2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(0.72rem, 1.8vw, 0.88rem);
+      overflow-x: auto;
+    }
+    .repo-tree-header {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    .tree-line { display: block; padding: 0.15rem 0; line-height: 1.6; }
+    .tree-dir { color: var(--accent-blue); }
+    .tree-file { color: var(--text-secondary); }
+    .tree-comment { color: var(--text-muted); }
+
+    /* ── TECH STACK ── */
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .tech-tag {
+      background: rgba(0, 20, 60, 0.7);
+      border: 1px solid var(--border-blue);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+      letter-spacing: 0.08em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .tech-tag:hover { border-color: var(--accent-blue); color: var(--accent-cyan); }
+
+    /* ── ANALOG BOX ── */
+    .analog-box {
+      background: rgba(0, 10, 35, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-left: 3px solid var(--accent-blue);
+      padding: 1.5rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin: 2rem 0;
+    }
+    .analog-box strong { color: var(--accent-cyan); }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid rgba(0, 60, 120, 0.3);
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+    }
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .footer-link {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .footer-link:hover { color: var(--accent-blue); }
+    .footer-divider {
+      width: 40px; height: 1px;
+      background: var(--border-blue);
+      margin: 1.5rem auto;
+    }
+    .footer-const {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+    .footer-const a { color: var(--text-muted); text-decoration: none; }
+    .footer-const a:hover { color: var(--accent-blue); }
+
+    /* ── FIXED BOTTOM BAR ── */
+    .ref-bottom {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 999;
+      background: linear-gradient(90deg, #030e1e, #061528, #030e1e);
+      border-top: 1px solid rgba(0, 100, 180, 0.5);
+      padding: 0.7rem 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+    }
+    .ref-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+      box-shadow: 0 0 8px var(--accent-amber);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.7); }
+    }
+    .ref-text { color: var(--text-muted); }
+    .ref-link { color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
+    .ref-link:hover { text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-blue), transparent);
+      margin: 0 1.5rem;
+    }
+
+    /* ── HIGHLIGHT NUMBERS ── */
+    .hl { color: var(--accent-cyan); font-weight: 700; }
+    .hl-gold { color: var(--accent-gold); font-weight: 700; }
+    .hl-green { color: var(--accent-green); font-weight: 700; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .section { padding: 3.5rem 0; }
+      .hero { padding: 5rem 1rem 3rem; }
+      .vacuumgate { padding: 2rem 1.25rem; }
+      .math-block { padding: 1.25rem; }
+      .barrier-item { grid-template-columns: auto 1fr; }
+      .ref-bottom { flex-wrap: wrap; gap: 0.5rem; font-size: 0.65rem; text-align: center; }
+    }
+
+    /* ── ANIMATE IN ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-badges { animation: fadeUp 0.6s ease both; }
+    .hero-title { animation: fadeUp 0.6s 0.15s ease both; }
+    .hero-sub-accent { animation: fadeUp 0.6s 0.25s ease both; }
+    .hero-fullname { animation: fadeUp 0.6s 0.3s ease both; }
+    .hero-tagline { animation: fadeUp 0.6s 0.4s ease both; }
+    .hero-cta { animation: fadeUp 0.6s 0.55s ease both; }
   </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div class="content">
-  <div class="referral-bar">
-    <strong>Try Claude free for 2 weeks</strong> — the AI behind this entire ecosystem. <a href="https://claude.ai/referral/4fAMYN9Ing">Start your free trial →</a>
-  </div>
 
-  <div class="hero">
-    <div class="hero-badge">Electromagnetic Launch Architecture</div>
-    <h1>BGKPJR<br>Core Simulations</h1>
-    <div class="subtitle">Brazelton Gryphon Kepler Propulsion Jump Revolution</div>
-    <div class="patent-badge">★ PATENT FILED ★</div>
-  </div>
+<!-- ═══════════════════════════════════════════════════════ CANVAS -->
+<canvas id="starfield"></canvas>
 
-  <div class="links">
-    <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations" class="btn btn-primary">View on GitHub →</a>
-    <a href="https://github.com/thebardchat" class="btn btn-secondary">thebardchat</a>
-  </div>
+<div class="page">
 
-  <div class="section">
-    <div class="section-title">Mission Stats</div>
+<!-- ═══════════════════════════════════════════════════════ TOP REFERRAL -->
+<div class="ref-top">
+  <strong style="color:#e2f0ff;">Try Claude free for 2 weeks</strong>
+  &nbsp;—&nbsp; the AI behind this entire ecosystem.
+  &nbsp;<a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener">Start your free trial →</a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<section class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-gold">★ Patent Filed</span>
+    <span class="badge badge-blue">Electromagnetic Launch Architecture</span>
+    <span class="badge badge-blue">Phase: Mathematical Validation</span>
+  </div>
+  <h1 class="hero-title">BGKPJR</h1>
+  <div class="hero-sub-accent">Core Simulations</div>
+  <div class="hero-fullname">Brazelton · Gryphon · Kepler · Propulsion · Jump · Revolution</div>
+  <p class="hero-tagline">
+    Reducing orbital access costs by <strong>90%</strong> through ground-based electromagnetic acceleration,
+    aerodynamic ascent, and deep-space solar sail transit.
+    <br/>Ground-based delta-V. Aircraft-like reusability. Patent-filed VacuumGate LH₂ seal.
+  </p>
+  <div class="hero-cta">
+    <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations" class="btn btn-primary" target="_blank">View Repository →</a>
+    <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/blob/main/docs/BGKPJR-VacuumGate-Feasibility-Report.md" class="btn btn-gold" target="_blank">Feasibility Report →</a>
+    <a href="https://github.com/thebardchat" class="btn btn-secondary" target="_blank">thebardchat</a>
+  </div>
+  <div class="scroll-hint">scroll</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ THE PROBLEM -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">01 · The Problem</div>
+    <h2 class="sec-title">Why Space Is Still Expensive</h2>
+    <p class="sec-desc">
+      Current launch systems are fundamentally constrained by the Tsiolkovsky Rocket Equation.
+      Every kilogram of payload requires 20–50 kg of propellant just to overcome Earth's gravity well and atmosphere.
+      This inefficiency has kept orbital access expensive and fragile for 70 years.
+    </p>
+
     <div class="stat-grid">
-      <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Control Systems</div></div>
-      <div class="stat-item"><div class="stat-num">LQR</div><div class="stat-label">Linear Quadratic Regulator</div></div>
-      <div class="stat-item"><div class="stat-num">MPC</div><div class="stat-label">Model Predictive Control</div></div>
-      <div class="stat-item"><div class="stat-num">EM</div><div class="stat-label">Launch Architecture</div></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Architecture</div>
-    <ul class="feature-list">
-      <li>Electromagnetic maglev track specifications and simulation models</li>
-      <li>LQR (Linear Quadratic Regulator) control system design</li>
-      <li>MPC (Model Predictive Control) trajectory optimization</li>
-      <li>Aerodynamic simulation and drag coefficient modeling</li>
-      <li>Gryphon spacecraft frame and structural design documents</li>
-      <li>Launch profile simulations across multiple gravity environments</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Systems</div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-icon">⚡</div>
-        <div class="card-label">Propulsion</div>
-        <div class="card-value">EM</div>
-        <div class="card-desc">Electromagnetic linear acceleration</div>
+      <div class="stat-card">
+        <div class="stat-num">85–95<span class="stat-unit">%</span></div>
+        <div class="stat-label">Propellant Mass Fraction</div>
+        <div class="stat-sub">Of a conventional rocket's mass at launch is propellant. Payload is the rounding error.</div>
       </div>
-      <div class="card">
-        <div class="card-icon">🛸</div>
-        <div class="card-label">Spacecraft</div>
-        <div class="card-value">Gryphon</div>
-        <div class="card-desc">Custom frame + payload design</div>
+      <div class="stat-card">
+        <div class="stat-num">$10K<span class="stat-unit">/kg</span></div>
+        <div class="stat-label">Current LEO Access Cost</div>
+        <div class="stat-sub">$2,000–$10,000 per kilogram depending on vehicle and orbit. Reusability has helped — barely.</div>
       </div>
-      <div class="card">
-        <div class="card-icon">🎛️</div>
-        <div class="card-label">Control</div>
-        <div class="card-value">LQR+MPC</div>
-        <div class="card-desc">Dual control architecture</div>
+      <div class="stat-card">
+        <div class="stat-num">20:1</div>
+        <div class="stat-label">Fuel-to-Payload Mass Ratio</div>
+        <div class="stat-sub">For every 1 kg of payload, you lift 20–50 kg of fuel. The Tsiolkovsky Equation doesn't negotiate.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">9,400<span class="stat-unit"> m/s</span></div>
+        <div class="stat-label">Required Δv to LEO</div>
+        <div class="stat-sub">Every meter per second must come from onboard propellant — unless you start accelerating before launch.</div>
       </div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class="section-title">Technology Stack</div>
-    <div class="tech-tags">
-      <span class="tag">Python</span>
-      <span class="tag">NumPy</span>
-      <span class="tag">SciPy</span>
-      <span class="tag">Matplotlib</span>
-      <span class="tag">Control Theory</span>
-      <span class="tag">Aerodynamics</span>
-      <span class="tag">Maglev</span>
-      <span class="tag">Trajectory Optimization</span>
+    <div class="math-block" data-label="Tsiolkovsky Rocket Equation — The Governing Constraint" style="margin-top:2.5rem">
+      <span class="eq">Δv = I<sub>sp</sub> × g₀ × ln(m<sub>initial</sub> / m<sub>final</sub>)</span>
+      <span class="eq eq-comment">// To reach LEO: Δv ≈ 9,400 m/s · mass ratio ≈ 20:1 · propellant fraction ≈ 95%</span>
+      <span class="eq eq-comment">// The equation is immutable. The only escape: provide Δv before ignition.</span>
     </div>
   </div>
+</section>
 
-  <div class="footer">
-    <p>Built by Shane Brazelton + Claude Anthropic · Hazel Green, AL</p>
-    <p style="margin-top:0.5rem"><a href="https://github.com/thebardchat/BGKPJR-Core-Simulations" style="color:#1e3a5f">github.com/thebardchat/BGKPJR-Core-Simulations</a></p>
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ ARCHITECTURE -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">02 · The Solution</div>
+    <h2 class="sec-title">Three-Stage Hybrid Architecture</h2>
+    <p class="sec-desc">
+      BGKPJR decouples the energy-intensive acceleration phase from the spacecraft itself.
+      Ground-based superconducting electromagnets provide the first 1,200 m/s — for free.
+      The Gryphon spacecraft uses aerodynamic lift to climb through the atmosphere.
+      The Kepler solar sail handles deep-space transit at zero propellant cost.
+    </p>
+
+    <div class="arch-diagram">
+<pre class="arch-ascii">
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                              BGKPJR LAUNCH SEQUENCE                                 │
+├───────────────────────┬───────────────────────┬─────────────────────────────────────┤
+│   STAGE 1: MAGLEV     │  STAGE 2: ATMOSPHERIC │  STAGE 3: ORBITAL / DEEP SPACE      │
+│       JUMP            │        ASCENT         │        SOLAR SAIL                   │
+├───────────────────────┼───────────────────────┼─────────────────────────────────────┤
+│                       │                       │                                     │
+│  ████████████████████ │         ●             │    ☀ ──────────────→ ◇───────◇      │
+│  █  EVACUATED TUBE  █ │        /|\            │                       \  KEPLER /   │
+│  ████████████████████ │       / | \           │     Solar Pressure     \  SAIL /    │
+│  ████████████████████ │      /  |  \          │     @ >300 km           \    /      │
+│  ████████████████████ │   Gryphon  Mach 3.5   │     1,200 m² CP1         \  /      │
+│  ████  NbTi  COILS  █ │   Wings    → Mach 8   │     Polyimide             \/        │
+│  ████████████████████ │   Deploy              │                                     │
+│         28.7 km       │   +Hybrid Propulsion  │  Deploy altitude: >300 km           │
+│         15°–45° incl  │                       │  Thrust: ~9 mN/m² at 1 AU           │
+│         4g sustained  │   L/D: 4.5 hypersonic │  Purpose: orbit raise +             │
+│                       │   L/D: 8.0 subsonic   │  deep-space station-keeping         │
+│  Exit: Mach 3.5–5.0   │   return glide        │                                     │
+│  ≈ 1,190–1,700 m/s    │   (unpowered)         │  NOT used during atmospheric        │
+│                       │                       │  phase — gravity wins               │
+├───────────────────────┼───────────────────────┼─────────────────────────────────────┤
+│  Δv provided: 1,200+  │  Δv provided: +hybrid │  Δv provided: solar pressure        │
+│  m/s (ground energy)  │  propulsion to LEO    │  (continuous, propellantless)       │
+└───────────────────────┴───────────────────────┴─────────────────────────────────────┘
+         LH₂ VacuumGate seal at tube exit ─────────────────────────────────────────────┘
+         (patent-filed detonation membrane — see Section 04)
+</pre>
+    </div>
+
+    <div class="stage-grid">
+      <div class="stage-card">
+        <div class="stage-num">STAGE 01 ·</div>
+        <div class="stage-title">Maglev Jump</div>
+        <ul class="stage-list">
+          <li>28.7 km evacuated superconducting tube</li>
+          <li>NbTi magnets — 4.2K operating temp, 8T field</li>
+          <li>15°–45° incline, variable by mission profile</li>
+          <li>4g sustained acceleration (crew-compatible)</li>
+          <li>Partial vacuum: 10⁻³ atm (eliminates drag)</li>
+          <li>50–150 MW continuous power demand</li>
+        </ul>
+        <span class="stage-mach">Exit: Mach 3.5–5.0 · 1,190–1,700 m/s</span>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">STAGE 02 ·</div>
+        <div class="stage-title">Gryphon Atmospheric Ascent</div>
+        <ul class="stage-list">
+          <li>Stealth-inspired blended wing body</li>
+          <li>Ti-6Al-4V / Carbon Composite airframe</li>
+          <li>Active Transpiration Cooling (nose cone)</li>
+          <li>L/D: 4.5 hypersonic · 8.0 subsonic return</li>
+          <li>Gryphon glides back unpowered — no recovery fuel</li>
+          <li>Payload: 5,000 kg to LEO</li>
+        </ul>
+        <span class="stage-mach">Climb: Mach 3.5 → Mach 8+ · 15,000 kg dry</span>
+      </div>
+      <div class="stage-card">
+        <div class="stage-num">STAGE 03 ·</div>
+        <div class="stage-title">Kepler Solar Sail</div>
+        <ul class="stage-list">
+          <li>Deploys ONLY at stable orbit (&gt;300 km)</li>
+          <li>1,200 m² CP1 Polyimide · 2.5 microns thick</li>
+          <li>~9 mN/m² thrust at 1 AU solar pressure</li>
+          <li>Zero propellant for orbit raising + station-keeping</li>
+          <li>Designed for deep-space transit missions</li>
+          <li>NOT used during atmospheric phase</li>
+        </ul>
+        <span class="stage-mach">Deploy: &gt;300 km · Thrust: propellantless</span>
+      </div>
+    </div>
   </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ VACUUMGATE -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">03 · Patent IP</div>
+    <h2 class="sec-title">VacuumGate: The LH₂ Membrane</h2>
+    <p class="sec-desc">
+      The single hardest physics problem in the BGKPJR architecture is the atmospheric wall at tube exit:
+      a vehicle moving at Mach 5 transitions from near-vacuum to full atmospheric density in milliseconds.
+      The VacuumGate LH₂ cryogenic seal is our patented solution.
+    </p>
+
+    <div class="vacuumgate">
+      <div class="vg-title">VacuumGate · LH₂ Cryogenic Exit Seal</div>
+      <div class="vg-subtitle">Liquid hydrogen membrane · −253 °C (20 K) · Triple-function architecture</div>
+
+      <div class="vg-steps">
+        <div class="vg-step">
+          <div class="vg-step-letter">A</div>
+          <div class="vg-step-text">
+            <strong style="color:var(--accent-gold)">Pressure gradient maintenance.</strong>
+            The LH₂ membrane seals the pressure differential between near-vacuum tube interior
+            (10⁻³ atm) and full atmospheric exterior, allowing continuous operation without
+            structural sealing mechanisms that would block vehicle egress.
+          </div>
+        </div>
+        <div class="vg-step">
+          <div class="vg-step-letter">B</div>
+          <div class="vg-step-text">
+            <strong style="color:var(--accent-gold)">Thermal heat sink.</strong>
+            During final acceleration the vehicle skin reaches 1,500–2,000 K stagnation temperature.
+            LH₂ at 20K absorbs an extraordinary quantity of thermal energy as it vaporizes,
+            providing active cooling of the vehicle nose during the critical exit phase.
+          </div>
+        </div>
+        <div class="vg-step">
+          <div class="vg-step-letter">C</div>
+          <div class="vg-step-text">
+            <strong style="color:var(--accent-gold)">Controlled detonation thrust.</strong>
+            When the vehicle breaches the membrane, LH₂ vapor instantly mixes with atmospheric O₂.
+            Onboard rockets ignite simultaneously. The engineering challenge: can the detonation
+            wave be controlled to propagate behind the vehicle, not around it?
+          </div>
+        </div>
+      </div>
+
+      <div class="vg-quote">
+        "This event is either a <strong>catastrophic failure</strong> or a <strong>controlled thrust-boost</strong>.
+        The entire engineering problem of BGKPJR-VG reduces to: <em>can we make the detonation wave
+        propagate behind the vehicle, in a controlled direction, at a controlled time?</em>
+        <strong>If yes → patent-worthy breakthrough. If no → vehicle and tunnel are destroyed on every launch.</strong>"
+        <br/><br/>— BGKPJR VacuumGate Feasibility Report, April 2026
+      </div>
+
+      <div class="vg-conclusion">
+        ★ &nbsp;The LH₂ detonation membrane is the novel IP. &nbsp;Nothing in StarTram, SpinLaunch, or any NIAC-funded
+        concept addresses this specific problem this way. &nbsp;★
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ TECH SPECS -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">04 · Technical Specifications</div>
+    <h2 class="sec-title">System Parameters</h2>
+    <p class="sec-desc">Current design targets as of April 2026. All values validated against published aerospace engineering literature and physics derivations in <code style="color:var(--accent-cyan)">/math</code>.</p>
+
+    <div class="spec-grid">
+      <div class="spec-table-wrap">
+        <div class="spec-table-title"><span class="spec-icon">⚡</span> Maglev Launch Track</div>
+        <table class="spec">
+          <tr><td>Track Length</td><td>28.7 km</td></tr>
+          <tr><td>Inclination</td><td>15° – 45°</td></tr>
+          <tr><td>Exit Velocity</td><td>Mach 3.5–5.0 (1,190–1,700 m/s)</td></tr>
+          <tr><td>Tube Pressure</td><td>10⁻³ atm partial vacuum</td></tr>
+          <tr><td>Tube Diameter</td><td>~10 m</td></tr>
+          <tr><td>Magnet Type</td><td>Superconducting NbTi</td></tr>
+          <tr><td>Operating Temp</td><td>4.2 K</td></tr>
+          <tr><td>Field Strength</td><td>8 Tesla</td></tr>
+          <tr><td>G-Load (sustained)</td><td>4g</td></tr>
+          <tr><td>Power Demand</td><td>50–150 MW continuous</td></tr>
+        </table>
+      </div>
+
+      <div class="spec-table-wrap">
+        <div class="spec-table-title"><span class="spec-icon">🛸</span> Gryphon Spacecraft</div>
+        <table class="spec">
+          <tr><td>Airframe</td><td>Ti-6Al-4V / Carbon Composite</td></tr>
+          <tr><td>Configuration</td><td>Blended wing body (stealth)</td></tr>
+          <tr><td>Mass (dry)</td><td>15,000 kg</td></tr>
+          <tr><td>Payload to LEO</td><td>5,000 kg</td></tr>
+          <tr><td>Wing Area</td><td>120 m² (deployed)</td></tr>
+          <tr><td>TPS</td><td>Active Transpiration Cooling</td></tr>
+          <tr><td>L/D (hypersonic)</td><td>4.5</td></tr>
+          <tr><td>L/D (subsonic)</td><td>8.0 (return glide)</td></tr>
+          <tr><td>Thermal Rating</td><td>994 K continuous (Mach 3.5)</td></tr>
+          <tr><td>Reusability</td><td>Unpowered glide return</td></tr>
+        </table>
+      </div>
+
+      <div class="spec-table-wrap">
+        <div class="spec-table-title"><span class="spec-icon">☀</span> Kepler Solar Sail</div>
+        <table class="spec">
+          <tr><td>Material</td><td>CP1 Polyimide</td></tr>
+          <tr><td>Thickness</td><td>2.5 microns</td></tr>
+          <tr><td>Sail Area</td><td>1,200 m²</td></tr>
+          <tr><td>Thrust @ 1 AU</td><td>~9 mN/m²</td></tr>
+          <tr><td>Deploy Altitude</td><td>&gt;300 km (stable orbit only)</td></tr>
+          <tr><td>Purpose</td><td>Orbit raise + station-keeping</td></tr>
+          <tr><td>Secondary</td><td>Deep-space transit</td></tr>
+          <tr><td>Propellant</td><td>Zero (solar pressure only)</td></tr>
+          <tr><td>Note</td><td>NOT atmospheric propulsion</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ MATHEMATICS -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">05 · The Mathematics</div>
+    <h2 class="sec-title">Physics Derivations</h2>
+    <p class="sec-desc">Every parameter in the BGKPJR architecture is derived from first principles. Full derivations are in <code style="color:var(--accent-cyan)">/math</code>. Key equations shown here.</p>
+
+    <div class="math-compare">
+      <div class="math-col">
+        <div class="math-col-title">Traditional Launch</div>
+        <div class="math-val">9,400 <span style="font-size:1rem">m/s</span></div>
+        <div class="math-sub">Required Δv · Mass ratio 20:1 · 95% propellant · $10K/kg</div>
+      </div>
+      <div class="math-col good">
+        <div class="math-col-title">With BGKPJR Maglev</div>
+        <div class="math-val" style="color:var(--accent-green)">7,400 <span style="font-size:1rem">m/s</span></div>
+        <div class="math-sub">Required Δv (maglev gives 1,200 m/s free) · Mass ratio ~12:1 · ~40% propellant reduction</div>
+      </div>
+    </div>
+
+    <div class="math-block" data-label="Track Length Derivation">
+      <span class="eq">L = v² / (2a)</span>
+      <span class="eq">L = (1,190 m/s)² / (2 × 4 × 9.81 m/s²)</span>
+      <span class="eq">L = 18.0 km  <span class="eq-comment">← minimum at 4g</span></span>
+      <span class="eq">L = 28.7 km  <span class="eq-comment">← with safety margin + curved exit section</span></span>
+    </div>
+
+    <div class="math-block" data-label="Compressible Aerodynamics — Prandtl-Glauert Correction">
+      <span class="eq">C<sub>L,compressible</sub> = C<sub>L,0</sub> / √(1 − M²)  <span class="eq-comment">← high subsonic / transonic</span></span>
+      <span class="eq">C<sub>L</sub> = 4α / √(M² − 1)  <span class="eq-comment">← Ackeret linear theory, supersonic</span></span>
+    </div>
+
+    <div class="math-block" data-label="Thermal Analysis — Stagnation Temperature at Mach 3.5 Exit">
+      <span class="eq">T<sub>stag</sub> = T<sub>∞</sub> × (1 + (γ−1)/2 × M²)</span>
+      <span class="eq">T<sub>stag</sub> = 288 K × (1 + 0.2 × 12.25)</span>
+      <span class="eq">T<sub>stag</sub> = 994 K  (721 °C)  <span class="eq-comment">← manageable with Ti leading edges + transpiration cooling</span></span>
+    </div>
+
+    <div class="math-block" data-label="Dynamic Pressure at Mach 5 Exit — The Atmospheric Wall">
+      <span class="eq">q = ½ρv²</span>
+      <span class="eq">q = ½ × (1.225 kg/m³) × (1,700 m/s)²</span>
+      <span class="eq">q ≈ 1.77 MPa  (256 psi)  <span class="eq-comment">← structural shock load at tube exit. This is what the LH₂ seal must absorb.</span></span>
+    </div>
+
+    <div class="math-block" data-label="Crushing Force — Vacuum Tube Structural Analysis">
+      <span class="eq">F = P<sub>atm</sub> × A<sub>surface</sub></span>
+      <span class="eq">F = 101 kPa × (π × 10m × 37,000m)</span>
+      <span class="eq">F ≈ 1.1 × 10<sup>10</sup> N  <span class="eq-comment">← atmospheric crushing force on full tube exterior</span></span>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ ENGINEERING HONESTY -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">06 · Engineering Assessment</div>
+    <h2 class="sec-title">What the Physics Actually Says</h2>
+    <p class="sec-desc">
+      This project operates with full engineering transparency. The feasibility report published April 18, 2026
+      documents every hard barrier with equal rigor to the architecture itself.
+    </p>
+
+    <div class="honesty-grid">
+      <div class="honesty-card">
+        <span class="honesty-check check-pass">✓ VALIDATED</span>
+        <div class="honesty-text">
+          <span class="hl-green">~65%</span> of the architecture is physically sound
+          with aggressive but known engineering. No element violates known physics.
+          The delta-v math, track length derivation, aerodynamic modeling, and solar sail
+          analysis are all within established literature.
+        </div>
+      </div>
+      <div class="honesty-card">
+        <span class="honesty-check check-warn">⚠ HARD PROBLEMS</span>
+        <div class="honesty-text">
+          <span class="hl-gold">~35%</span> contains physics problems requiring
+          either redesign or honest acknowledgment of limits. Several elements exceed
+          current engineering capability by 1–2 orders of magnitude. This is documented,
+          not hidden.
+        </div>
+      </div>
+      <div class="honesty-card" style="grid-column: span 1;">
+        <span class="honesty-check check-pass">✓ NEAREST ANALOG</span>
+        <div class="honesty-text">
+          NASA NIAC-funded <strong style="color:var(--accent-cyan)">StarTram</strong>
+          (Powell/Maise, 2001–2012) is the closest comparable architecture.
+          BGKPJR-VG exceeds StarTram's scope with the LH₂ detonation membrane —
+          that specific innovation is the novel, patent-filed IP.
+        </div>
+      </div>
+    </div>
+
+    <div class="analog-box">
+      <strong>Context:</strong> The longest tunnel on Earth is the Gotthard Base Tunnel at 57 km.
+      A 37 km evacuated superconducting tube is 60× longer than any Hyperloop prototype ever built.
+      This is not a Phase 1 engineering project — it is a <strong>Phase N</strong> engineering project
+      that requires multi-agency coalition funding estimated at <strong>$85–120 billion</strong>.
+      The math is real. The engineering timeline is generational.
+    </div>
+
+    <div style="background:var(--bg-card);border:1px solid var(--border-blue);border-radius:3px;overflow:hidden;backdrop-filter:blur(8px);">
+      <div style="background:rgba(0,100,200,0.15);border-bottom:1px solid var(--border-blue);padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-blue);text-transform:uppercase;">
+        Seven Hard Barriers — Documented in Full
+      </div>
+      <ul class="barriers-list">
+        <li class="barrier-item">
+          <div class="barrier-num">1</div>
+          <div class="barrier-content">
+            <div class="barrier-title">Track-Length / G-Force Paradox <span class="barrier-status status-critical">CRITICAL</span></div>
+            <div class="barrier-desc">At 4g, 37 km reaches Mach 5 — not orbital velocity. System MUST be hybrid: tunnel provides partial Δv, onboard rockets complete the insertion. Revised target: Mach 5 exit + 35–45% fuel savings. Significant, but not magic.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">2</div>
+          <div class="barrier-content">
+            <div class="barrier-title">Vacuum Tube Structural Problem <span class="barrier-status status-critical">CRITICAL</span></div>
+            <div class="barrier-desc">1.1 × 10¹⁰ N crushing force on 10m diameter × 37 km tube. A 1 cm² leak admits 30 kg of air per minute. 50–150 MW continuous pumping. Hyperloop hasn't solved this at 600m scale. Mitigation: partial vacuum (10⁻³ atm), not deep vacuum; segmented pumping.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">3</div>
+          <div class="barrier-content">
+            <div class="barrier-title">The Atmospheric Wall <span class="barrier-status status-critical">CRITICAL</span></div>
+            <div class="barrier-desc">Dynamic pressure q ≈ 1.77 MPa (256 psi) at Mach 5 sea-level exit. Vehicle transitions vacuum to full atmospheric density in milliseconds. Without mitigation: structural destruction. This is the exact problem the LH₂ membrane solves.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">4</div>
+          <div class="barrier-content">
+            <div class="barrier-title">LH₂ Seal Chemistry — Controlled Hindenburg <span class="barrier-status status-severe">SEVERE</span></div>
+            <div class="barrier-desc">LH₂ at −253°C breached by Mach-5 vehicle: instant vaporization (70 kg/m³ → 1000× volume), O₂ mixing, stoichiometric mixture, guaranteed ignition from plasma-hot skin. The engineering question: detonation behind the vehicle or around it? Patent IP lives here.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">5</div>
+          <div class="barrier-content">
+            <div class="barrier-title">Thermal Wall — 1,500–2,000 K at Mach 5 <span class="barrier-status status-severe">SEVERE</span></div>
+            <div class="barrier-desc">Mach 5 at atmospheric density produces stagnation temps far beyond shuttle tile rating. Requires active transpiration cooling (sweating skin), magnetohydrodynamic boundary layer control, or the LH₂ membrane absorbing stagnation heat during transit.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">6</div>
+          <div class="barrier-content">
+            <div class="barrier-title">Solar Sail Timing <span class="barrier-status status-resolved">RESOLVED IN V3</span></div>
+            <div class="barrier-desc">Solar sails generate micronewtons of thrust. They cannot lift a vehicle from sub-orbital trajectory — gravity wins every time. Kepler sail is a Phase 4 system: deploys ONLY after stable orbit for deep-space operations. Not a launch system.</div>
+          </div>
+        </li>
+        <li class="barrier-item">
+          <div class="barrier-num">7</div>
+          <div class="barrier-content">
+            <div class="barrier-title">Economic Scale — $85–120 Billion <span class="barrier-status status-critical">CRITICAL</span></div>
+            <div class="barrier-desc">No single nation or private company can fund this. Comparable: StarTram cargo-only ~$20B; human-rated ~$60B+. BGKPJR-VG with LH₂ infrastructure: $85–120B. Multi-agency world-leader coalition is not optional — it is the only path to construction.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ CONTROL SYSTEMS -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">07 · Control Systems</div>
+    <h2 class="sec-title">Guidance, Navigation & Control</h2>
+    <p class="sec-desc">
+      BGKPJR operates in two fundamentally different flight regimes — each requiring a distinct control architecture.
+      Full implementations are in <code style="color:var(--accent-cyan)">/control_systems</code>.
+    </p>
+
+    <div class="ctrl-grid">
+      <div class="ctrl-card">
+        <div class="ctrl-acronym">LQR</div>
+        <div class="ctrl-full">Linear Quadratic Regulator</div>
+        <div class="ctrl-phase">PHASE · Atmospheric Flight</div>
+        <div class="ctrl-desc">
+          Optimal linear state-feedback controller for the Gryphon spacecraft during atmospheric ascent.
+          Minimizes a quadratic cost function over state and control effort. Designed for the
+          Mach 3.5 → Mach 8+ climb profile with nonlinear aerodynamic effects linearized around
+          multiple operating points along the trajectory.
+        </div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-acronym">MPC</div>
+        <div class="ctrl-full">Model Predictive Control</div>
+        <div class="ctrl-phase">PHASE · Maglev Track Acceleration</div>
+        <div class="ctrl-desc">
+          Receding-horizon optimization for maglev track trajectory. Computes optimal coil
+          switching sequences and magnetic field profiles to maintain vehicle centerline,
+          minimize lateral oscillation, and hit exit velocity targets within structural
+          G-load limits. Runs at kHz update rates during 28.7 km acceleration phase.
+        </div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-acronym">ATT</div>
+        <div class="ctrl-full">Attitude Stabilization</div>
+        <div class="ctrl-phase">PHASE · All Flight Phases</div>
+        <div class="ctrl-desc">
+          Six-degree-of-freedom attitude control across all mission phases:
+          tube exit transition shock, hypersonic climb, exo-atmospheric coast,
+          orbital insertion, and Gryphon return glide. Reaction control system +
+          aerodynamic surfaces for phase-appropriate authority.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ REPO STRUCTURE -->
+<section class="section">
+  <div class="container">
+    <div class="sec-label">08 · Repository</div>
+    <h2 class="sec-title">Codebase Structure</h2>
+    <p class="sec-desc">Python physics engine, Jupyter analysis notebooks, MATLAB/Simulink models, and full aerodynamic documentation.</p>
+
+    <div class="repo-tree">
+      <div class="repo-tree-header">// BGKPJR-Core-Simulations/ · repository tree</div>
+<span class="tree-line"><span class="tree-dir">BGKPJR-Core-Simulations/</span></span>
+<span class="tree-line">├── <span class="tree-dir">simulation/</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">src/</span>          <span class="tree-comment">Python physics engine — trajectory, aero, thermal</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">notebooks/</span>    <span class="tree-comment">Jupyter analysis — validated simulation runs</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">tests/</span>        <span class="tree-comment">Unit tests for physics validation</span></span>
+<span class="tree-line">│   └── <span class="tree-dir">matlab/</span>       <span class="tree-comment">MATLAB / Simulink models</span></span>
+<span class="tree-line">├── <span class="tree-dir">control_systems/</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">lqr/</span>          <span class="tree-comment">Linear Quadratic Regulator — atmospheric phase</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">mpc/</span>          <span class="tree-comment">Model Predictive Control — maglev trajectory</span></span>
+<span class="tree-line">│   └── <span class="tree-dir">stabilization/</span> <span class="tree-comment">Attitude control algorithms, 6-DOF</span></span>
+<span class="tree-line">├── <span class="tree-dir">docs/</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">aerodynamics/</span> <span class="tree-comment">Lift, drag, compressibility, Prandtl-Glauert</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">propulsion/</span>   <span class="tree-comment">Rocket equations, hybrid propulsion systems</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">flight_dynamics/</span> <span class="tree-comment">Stability, control, trajectory planning</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">thermal/</span>      <span class="tree-comment">TPS design, transpiration cooling, MHD</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">gnc/</span>          <span class="tree-comment">Guidance, Navigation, Control documentation</span></span>
+<span class="tree-line">│   └── <span class="tree-dir">system_specs/</span> <span class="tree-comment">Gryphon, Kepler, Track full specifications</span></span>
+<span class="tree-line">├── <span class="tree-dir">design/</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">airfoils/</span>     <span class="tree-comment">.dat wing profile files (OpenVSP compatible)</span></span>
+<span class="tree-line">│   ├── <span class="tree-dir">geometry/</span>     <span class="tree-comment">OpenVSP / FreeCAD models</span></span>
+<span class="tree-line">│   └── <span class="tree-dir">cad/</span>          <span class="tree-comment">Detailed CAD exports</span></span>
+<span class="tree-line">├── <span class="tree-dir">math/</span>          <span class="tree-comment">First-principles derivations for all parameters</span></span>
+<span class="tree-line">├── <span class="tree-dir">roadmap/</span>       <span class="tree-comment">Phased development plan — Phase 1 → Phase 4</span></span>
+<span class="tree-line">├── <span class="tree-dir">data/</span>          <span class="tree-comment">Lift/drag polars, atmospheric tables, ref data</span></span>
+<span class="tree-line">├── <span class="tree-dir">patents/</span>       <span class="tree-comment">Patent documentation — VacuumGate LH₂ membrane</span></span>
+<span class="tree-line">└── <span class="tree-file">requirements.txt</span>  <span class="tree-comment">numpy scipy matplotlib jupyter control</span></span>
+    </div>
+
+    <div style="margin-top:2rem">
+      <div class="sec-label" style="margin-bottom:1rem">Technology Stack</div>
+      <div class="tech-tags">
+        <span class="tech-tag">Python 3.10+</span>
+        <span class="tech-tag">NumPy</span>
+        <span class="tech-tag">SciPy</span>
+        <span class="tech-tag">Matplotlib</span>
+        <span class="tech-tag">Jupyter</span>
+        <span class="tech-tag">MATLAB / Simulink</span>
+        <span class="tech-tag">Control Theory</span>
+        <span class="tech-tag">Aerodynamics</span>
+        <span class="tech-tag">Maglev Engineering</span>
+        <span class="tech-tag">Trajectory Optimization</span>
+        <span class="tech-tag">OpenVSP</span>
+        <span class="tech-tag">FreeCAD</span>
+        <span class="tech-tag">LQR</span>
+        <span class="tech-tag">MPC</span>
+        <span class="tech-tag">6-DOF Simulation</span>
+        <span class="tech-tag">Compressible Aero</span>
+        <span class="tech-tag">TPS Design</span>
+        <span class="tech-tag">Solar Sail Dynamics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="hero-cta" style="margin-bottom:2rem">
+      <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations" class="btn btn-primary" target="_blank">View Repository →</a>
+      <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations/blob/main/docs/BGKPJR-VacuumGate-Feasibility-Report.md" class="btn btn-gold" target="_blank">Feasibility Report →</a>
+      <a href="https://github.com/thebardchat" class="btn btn-secondary" target="_blank">thebardchat</a>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-name">Shane Brazelton + Claude Anthropic</div>
+    <div class="footer-const" style="margin-bottom:0.5rem">
+      Built in Hazel Green, AL · Patent Filed 2026 · Apache 2.0 License
+    </div>
+    <a href="https://github.com/thebardchat/BGKPJR-Core-Simulations" class="footer-link">
+      github.com/thebardchat/BGKPJR-Core-Simulations
+    </a>
+    <div class="footer-divider"></div>
+    <div class="footer-const">
+      This project operates under the
+      <a href="https://github.com/thebardchat/constitution/blob/main/CONSTITUTION.md">ShaneTheBrain Constitution</a>
+      · Pi before cloud · Privacy before convenience
+    </div>
+    <div style="margin-top:1.5rem;font-family:var(--font-mono);font-size:0.72rem;color:var(--accent-amber);opacity:0.8;">
+      ★ Try Claude free for 2 weeks —
+      <a href="https://claude.ai/referral/4fAMYN9Ing" style="color:var(--accent-cyan);text-decoration:none;" target="_blank">claude.ai/referral/4fAMYN9Ing</a>
+      · the AI behind this entire ecosystem ★
+    </div>
+  </div>
+</footer>
+
+</div><!-- end .page -->
+
+<!-- ═══════════════════════════════════════════════════════ FIXED BOTTOM BAR -->
+<div class="ref-bottom">
+  <div class="ref-dot"></div>
+  <span class="ref-text">Try Claude free for 2 weeks —</span>
+  <a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener" class="ref-link">Start your free trial →</a>
+  <span class="ref-text">· AI behind this ecosystem</span>
 </div>
 
-<div style="position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(90deg,#060910,#0b1124,#060910);border-top:1px solid #1e3060;padding:0.6rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.2rem;font-family:monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;">
-  <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;display:inline-block;"></span>
-  <span style="color:#3d5a78;">Try Claude free for 2 weeks —</span>
-  <a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener" style="color:#00b4d8;text-decoration:none;">Start your free trial →</a>
-  <span style="color:#3d5a78;">· AI behind this ecosystem</span>
-</div>
-
+<!-- ═══════════════════════════════════════════════════════ CANVAS SCRIPT -->
 <script>
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-let W, H, particles = [], stars = [];
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H;
 
-function resize(){
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', resize);
+  const stars = [];
+  const STAR_COUNT = 280;
 
-// Stars
-for(let i=0;i<200;i++){
-  stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.5,a:Math.random()});
-}
+  const particles = [];
+  const PARTICLE_COUNT = 100;
 
-// Launch particles (sparks moving up)
-class Particle {
-  constructor(){this.reset()}
-  reset(){
-    this.x = W*0.5 + (Math.random()-0.5)*W*0.3;
-    this.y = H*1.1;
-    this.vx = (Math.random()-0.5)*2;
-    this.vy = -(Math.random()*4+2);
-    this.life = 1;
-    this.decay = Math.random()*0.008+0.003;
-    this.r = Math.random()*3+1;
-    this.hue = 180+Math.random()*60;
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
   }
-  update(){
-    this.x += this.vx;
-    this.y += this.vy;
-    this.vy *= 0.995;
-    this.life -= this.decay;
-    if(this.life<=0)this.reset();
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Initialize stars
+  for (let i = 0; i < STAR_COUNT; i++) {
+    stars.push({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 1.8 + 0.2,
+      alpha: Math.random() * 0.6 + 0.15,
+      twinkleSpeed: Math.random() * 0.008 + 0.002,
+      twinklePhase: Math.random() * Math.PI * 2,
+      color: Math.random() > 0.8 ? '#b0d4ff' : (Math.random() > 0.5 ? '#ffffff' : '#cce4ff'),
+    });
   }
-  draw(){
+
+  // Particle class for maglev launch effect
+  class Particle {
+    constructor() { this.reset(true); }
+
+    reset(initial = false) {
+      this.x = W * 0.3 + Math.random() * W * 0.4;
+      this.y = initial ? Math.random() * H : H + 20;
+      this.vx = (Math.random() - 0.5) * 1.2;
+      this.vy = -(Math.random() * 3.5 + 1.5);
+      this.life = initial ? Math.random() : 1;
+      this.maxLife = 1;
+      this.decay = Math.random() * 0.006 + 0.003;
+      this.r = Math.random() * 2.5 + 0.5;
+      this.hue = 190 + Math.random() * 50; // blue-cyan range
+      this.drift = (Math.random() - 0.5) * 0.05;
+    }
+
+    update() {
+      this.x += this.vx + this.drift;
+      this.y += this.vy;
+      this.vy *= 0.998;
+      this.life -= this.decay;
+      if (this.life <= 0) this.reset(false);
+    }
+
+    draw() {
+      const alpha = this.life * 0.8;
+      // Trail
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.x - this.vx * 10, this.y - this.vy * 10);
+      ctx.strokeStyle = `hsla(${this.hue}, 100%, 70%, ${alpha * 0.35})`;
+      ctx.lineWidth = this.r * 0.6;
+      ctx.stroke();
+      // Core
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${this.hue}, 100%, 80%, ${alpha})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new Particle());
+  }
+
+  // Horizontal maglev track line (subtle)
+  let trackOffset = 0;
+
+  function drawTrack(t) {
+    const y = H * 0.78;
+    // Track rails
+    ctx.strokeStyle = 'rgba(0, 100, 200, 0.12)';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-    ctx.fillStyle = `hsla(${this.hue},100%,70%,${this.life})`;
-    ctx.fill();
-    // Trail
-    ctx.beginPath();
-    ctx.moveTo(this.x,this.y);
-    ctx.lineTo(this.x-this.vx*8,this.y-this.vy*8);
-    ctx.strokeStyle = `hsla(${this.hue},100%,60%,${this.life*0.4})`;
-    ctx.lineWidth = this.r*0.5;
+    ctx.moveTo(0, y - 8); ctx.lineTo(W, y - 8);
+    ctx.moveTo(0, y + 8); ctx.lineTo(W, y + 8);
     ctx.stroke();
-  }
-}
 
-for(let i=0;i<80;i++) particles.push(new Particle());
-
-// Maglev track lines
-const trackY = H*0.75;
-
-function draw(){
-  ctx.fillStyle = 'rgba(0,0,16,0.15)';
-  ctx.fillRect(0,0,W,H);
-
-  // Stars
-  stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.arc(s.x*W, s.y*H, s.r, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(200,220,255,${s.a*0.6})`;
-    ctx.fill();
-  });
-
-  // Track
-  ctx.strokeStyle = 'rgba(0,100,200,0.2)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, trackY-10);
-  ctx.lineTo(W, trackY-10);
-  ctx.moveTo(0, trackY+10);
-  ctx.lineTo(W, trackY+10);
-  ctx.stroke();
-
-  // Electric arcs between track lines
-  const time = Date.now()*0.001;
-  ctx.strokeStyle = `rgba(0,200,255,${0.1+0.05*Math.sin(time*3)})`;
-  ctx.lineWidth = 1;
-  for(let i=0;i<W;i+=40){
-    const off = Math.sin(i*0.05+time*2)*6;
-    ctx.beginPath();
-    ctx.moveTo(i, trackY-10);
-    ctx.lineTo(i+20, trackY+off);
-    ctx.lineTo(i+40, trackY+10);
-    ctx.stroke();
+    // Moving electric arc segments
+    ctx.lineWidth = 0.8;
+    const spacing = 50;
+    const offset = (t * 80) % spacing;
+    for (let x = -spacing + offset; x < W + spacing; x += spacing) {
+      const mid = y + Math.sin(x * 0.05 + t * 4) * 5;
+      ctx.beginPath();
+      ctx.moveTo(x, y - 8);
+      ctx.quadraticCurveTo(x + spacing * 0.5, mid, x + spacing, y + 8);
+      const pulse = 0.05 + 0.04 * Math.sin(t * 6 + x * 0.02);
+      ctx.strokeStyle = `rgba(0, 220, 255, ${pulse})`;
+      ctx.stroke();
+    }
   }
 
-  particles.forEach(p=>{p.update();p.draw()});
+  let lastTime = 0;
+  function draw(ts) {
+    const t = ts * 0.001;
 
+    // Dark space fade
+    ctx.fillStyle = 'rgba(0, 0, 14, 0.18)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars with twinkle
+    stars.forEach(s => {
+      const a = s.alpha * (0.6 + 0.4 * Math.sin(t * s.twinkleSpeed * 50 + s.twinklePhase));
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color.replace(')', `, ${a})`).replace('rgb', 'rgba').replace('#', 'rgba(').replace(')', `, ${a})`);
+      // simpler:
+      ctx.globalAlpha = a;
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+
+    // Track
+    drawTrack(t);
+
+    // Particles
+    particles.forEach(p => { p.update(); p.draw(); });
+
+    requestAnimationFrame(draw);
+  }
   requestAnimationFrame(draw);
-}
-draw();
+})();
 </script>
 </body>
 </html>
