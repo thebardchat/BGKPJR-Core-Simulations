@@ -6,6 +6,12 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)]()
 
 # BGKPJR Launch Architecture
+
+> **Try Claude free for 2 weeks** — the AI behind this entire ecosystem. [Start your free trial →](https://claude.ai/referral/4fAMYN9Ing)
+
+---
+
+
 ### Brazelton Gryphon Kepler Propulsion Jump Revolution
 
 > *Reducing orbital access costs by 90% through ground-based acceleration and aerodynamic efficiency.*
