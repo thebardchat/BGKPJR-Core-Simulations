@@ -1745,6 +1745,78 @@ EARTH SURFACE                                                      MOON
     return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
   }
 
+  // Shared Space Tug renderer. Matches the static SVG schematic above:
+  // chemical LH2/LOX engine bell aft, spherical propellant tanks, twin
+  // solar arrays extended perpendicular to body axis, docking port at nose.
+  // Body frame: +x = nose (docking port), -x = engine bell.
+  function drawSpaceTug(ctx, x, y, angle, scale, opts) {
+    const o = opts || {};
+    const thrust = Math.max(0, Math.min(1, o.thrust || 0));
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.scale(scale, scale);
+    // Engine plume (drawn behind hull)
+    if (thrust > 0) {
+      const pl = 32 * thrust * (0.85 + Math.random()*0.3);
+      const pg = ctx.createLinearGradient(-12,0,-12-pl,0);
+      pg.addColorStop(0, `rgba(255,225,130,${0.9*thrust})`);
+      pg.addColorStop(0.4, `rgba(255,140,40,${0.65*thrust})`);
+      pg.addColorStop(1, 'rgba(255,40,0,0)');
+      ctx.fillStyle = pg;
+      ctx.beginPath();
+      ctx.moveTo(-11,-3.2);
+      ctx.lineTo(-12-pl, -1.4 + (Math.random()-0.5));
+      ctx.lineTo(-12-pl,  1.4 + (Math.random()-0.5));
+      ctx.lineTo(-11, 3.2);
+      ctx.closePath(); ctx.fill();
+    }
+    // Engine bell (aft)
+    ctx.fillStyle = '#0a1e38';
+    ctx.strokeStyle = '#1a5080'; ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(-8,-3.5); ctx.lineTo(-12,-4.8); ctx.lineTo(-12,4.8); ctx.lineTo(-8,3.5);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Solar arrays (ROSA-style, extended perpendicular to body)
+    ctx.fillStyle = '#0a2858';
+    ctx.strokeStyle = '#2a68b0'; ctx.lineWidth = 0.5;
+    ctx.fillRect(-5, -16, 10, 10); ctx.strokeRect(-5, -16, 10, 10);
+    ctx.fillRect(-5,   6, 10, 10); ctx.strokeRect(-5,   6, 10, 10);
+    ctx.strokeStyle = 'rgba(110,170,230,0.5)'; ctx.lineWidth = 0.25;
+    [-13,-10,-7].forEach(gy => { ctx.beginPath(); ctx.moveTo(-5,gy); ctx.lineTo(5,gy); ctx.stroke(); });
+    [9,12,15].forEach(gy => { ctx.beginPath(); ctx.moveTo(-5,gy); ctx.lineTo(5,gy); ctx.stroke(); });
+    ctx.beginPath(); ctx.moveTo(0,-16); ctx.lineTo(0,-6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,6);   ctx.lineTo(0,16); ctx.stroke();
+    // Main hull
+    ctx.fillStyle = '#163a60';
+    ctx.strokeStyle = '#3a88c0'; ctx.lineWidth = 0.7;
+    ctx.fillRect(-8, -3.5, 18, 7);
+    ctx.strokeRect(-8, -3.5, 18, 7);
+    // Spherical propellant tanks (LH2 / LOX)
+    ctx.fillStyle = '#0d2540'; ctx.strokeStyle = '#2a6090'; ctx.lineWidth = 0.6;
+    ctx.beginPath(); ctx.arc(-3, 0, 2.4, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc( 3, 0, 2.4, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    // Docking port (nose)
+    ctx.fillStyle = '#061018'; ctx.strokeStyle = '#2a7ab0'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.arc(10, 0, 2.2, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#00b4ff';
+    ctx.beginPath(); ctx.arc(10, 0, 0.9, 0, Math.PI*2); ctx.fill();
+    // Docked cargo pod (forward of docking port) — drawn when tug is carrying payload
+    if (o.withPod) {
+      ctx.fillStyle = '#ccdae6';
+      ctx.beginPath();
+      ctx.moveTo(22, 0); ctx.lineTo(18,-3.2); ctx.lineTo(12.5,-3.2);
+      ctx.lineTo(12.5, 3.2); ctx.lineTo(18, 3.2);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e2eef8';
+      ctx.beginPath(); ctx.moveTo(22,0); ctx.lineTo(18,-2); ctx.lineTo(18,2); ctx.closePath(); ctx.fill();
+      // docking collar
+      ctx.strokeStyle = 'rgba(0,200,255,0.8)'; ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.moveTo(12.5,-3.2); ctx.lineTo(12.5,3.2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function drawLaunch(ts) {
     const W = lc.width, H = lc.height;
     const t  = (ts * 0.001) % LOOP;
@@ -1930,41 +2002,80 @@ EARTH SURFACE                                                      MOON
       ctx.save(); ctx.translate(podX,podY); ctx.rotate(Math.atan2(podVY,podVX));
       ctx.beginPath(); ctx.moveTo(-4,-4); ctx.lineTo(-4,4); ctx.lineTo(-plen+(Math.random()*4-2),0); ctx.closePath();
       ctx.fillStyle=pg; ctx.fill(); ctx.restore();
-    } else if (t < 11) { // Orbit
+    } else if (t < 11) { // LEO rendezvous — pod closes on tug, 117.5 m/s catch burn, docking
       const p=(t-8)/3;
-      const ang=-0.85-p*.9;
-      podX=orbitCX+orbitRX*Math.cos(ang);
-      podY=orbitCY+orbitRY*Math.sin(ang);
-      podVX=-Math.sin(ang); podVY=Math.cos(ang)*(orbitRY/orbitRX);
-      podVisible=true;
-      // Space Tug (ahead on orbit)
-      const ta=ang+1.2;
-      const tx3=orbitCX+orbitRX*Math.cos(ta);
-      const ty3=orbitCY+orbitRY*Math.sin(ta);
-      ctx.save(); ctx.translate(tx3,ty3);
-      ctx.fillStyle='#6090b0'; ctx.fillRect(-7,-4,14,8);
-      ctx.fillStyle='rgba(20,80,180,.7)'; ctx.fillRect(-12,-2.5,5,5); ctx.fillRect(7,-2.5,5,5);
-      ctx.fillStyle='#4080b0'; ctx.beginPath(); ctx.moveTo(-9,-3); ctx.lineTo(-13,-5); ctx.lineTo(-13,5); ctx.lineTo(-9,3); ctx.closePath(); ctx.fill();
-      const tg=ctx.createRadialGradient(0,0,0,0,0,16);
-      tg.addColorStop(0,'rgba(0,160,255,.2)'); tg.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(0,0,16,0,Math.PI*2); ctx.fill();
-      ctx.restore();
-      ctx.fillStyle='rgba(0,200,255,.55)';
+      // Tug leads on the orbit ring. Over the phase, the pod closes the 117.5 m/s gap.
+      // closeP ramps 0→1 so pod catches up to tug position; after closeP>=1, they fly docked.
+      const closeP = Math.min(1, p/0.72);
+      const tugAng = -0.85 - p*0.9 - 0.55*(1-closeP); // tug leads; gap shrinks to 0 at dock
+      const podAng = -0.85 - p*0.9;                    // pod trailing
+      const tx3 = orbitCX+orbitRX*Math.cos(tugAng);
+      const ty3 = orbitCY+orbitRY*Math.sin(tugAng);
+      const tugHeading = Math.atan2(Math.cos(tugAng)*(orbitRY/orbitRX), -Math.sin(tugAng));
+      // Catch-burn plume: fires briefly as pod is closing (117.5 m/s circularization)
+      const burn = closeP<1 ? Math.max(0, Math.sin(closeP*Math.PI))*0.6 : 0;
+      const docked = closeP >= 1;
+      drawSpaceTug(ctx, tx3, ty3, tugHeading, 1.0, { thrust: burn, withPod: docked });
+      // Pod is drawn separately while closing; once docked, the tug renderer owns it
+      if (!docked) {
+        podX = orbitCX+orbitRX*Math.cos(podAng);
+        podY = orbitCY+orbitRY*Math.sin(podAng);
+        podVX = -Math.sin(podAng); podVY = Math.cos(podAng)*(orbitRY/orbitRX);
+        podVisible = true;
+        // Closing-vector indicator (dashed line pod → tug)
+        ctx.strokeStyle = `rgba(0,230,255,${0.25+0.35*(1-closeP)})`;
+        ctx.lineWidth = 1; ctx.setLineDash([3,5]);
+        ctx.beginPath(); ctx.moveTo(podX,podY); ctx.lineTo(tx3,ty3); ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        podVisible = false;
+      }
+      // Label
+      ctx.fillStyle='rgba(0,200,255,.7)';
       ctx.font=`${Math.round(W*.009)}px Share Tech Mono,monospace`;
-      ctx.fillText('SPACE TUG',tx3+10,ty3-7);
-    } else { // Transfer
+      ctx.fillText(docked ? 'SPACE TUG + POD · DOCKED' : 'SPACE TUG · CATCH BURN 117.5 m/s',
+                   tx3+18, ty3-14);
+    } else { // TLI + Hohmann transfer — tug carries pod to the Moon
       const p=(t-11)/5;
       const startX=arcTX, startY=arcTY;
-      podX=startX+(mx-startX)*p;
-      podY=startY+(my-startY)*p - Math.sin(p*Math.PI)*40;
-      podVX=1; podVY=-0.3; podVisible=true;
-      // Transfer path
+      // Transfer path (drawn as reference)
       ctx.strokeStyle='rgba(251,191,36,.3)'; ctx.lineWidth=1.5;
       ctx.setLineDash([6,10]);
       ctx.beginPath(); ctx.moveTo(startX,startY);
       const cpx=(startX+mx)*.5, cpy=(startY+my)*.5-50;
       ctx.quadraticCurveTo(cpx,cpy,mx,my);
       ctx.stroke(); ctx.setLineDash([]);
+      // Tug+pod stack position on the arc (same quadratic curve)
+      const u = 1-p;
+      const stackX = u*u*startX + 2*u*p*cpx + p*p*mx;
+      const stackY = u*u*startY + 2*u*p*cpy + p*p*my;
+      const u2 = 1-Math.min(p+0.02,1), p2 = Math.min(p+0.02,1);
+      const nx = u2*u2*startX + 2*u2*p2*cpx + p2*p2*mx;
+      const ny = u2*u2*startY + 2*u2*p2*cpy + p2*p2*my;
+      const heading = Math.atan2(ny-stackY, nx-stackX);
+      // TLI burn plume: firing for the first ~25% of the transfer, then coasting
+      const tliBurn = p < 0.25 ? (1 - p/0.25) : 0;
+      // After ~92% of transit the pod is released into lunar orbit and the tug trails
+      const released = p > 0.92;
+      if (released) {
+        const rp = (p-0.92)/0.08;
+        // Pod continues to moon
+        podX = stackX + (mx-stackX)*rp;
+        podY = stackY + (my-stackY)*rp;
+        podVX = Math.cos(heading); podVY = Math.sin(heading);
+        podVisible = true;
+        // Tug drifts slightly behind (retrograde separation)
+        drawSpaceTug(ctx, stackX - 12*rp*Math.cos(heading), stackY - 12*rp*Math.sin(heading),
+                     heading, 1.0, { thrust: 0, withPod: false });
+      } else {
+        drawSpaceTug(ctx, stackX, stackY, heading, 1.05, { thrust: tliBurn, withPod: true });
+        podVisible = false;
+      }
+      // Label
+      ctx.fillStyle='rgba(251,191,36,.7)';
+      ctx.font=`${Math.round(W*.009)}px Share Tech Mono,monospace`;
+      ctx.fillText(tliBurn>0 ? 'TLI BURN · 3,082 m/s' : (released ? 'POD RELEASE · LUNAR CAPTURE' : 'HOHMANN COAST · 4.98 DAYS'),
+                   stackX+14, stackY-14);
     }
 
     // Draw pod
@@ -2124,32 +2235,145 @@ EARTH SURFACE                                                      MOON
     ctx.font=`bold ${Math.round(W*.013)}px Orbitron,monospace`;
     ctx.textAlign='center'; ctx.fillText('MOON',mCX,mCY+mR+16); ctx.textAlign='left';
 
-    // ── SPACE TUG (animated on LEO) ──
-    const tugAngle = t * 0.4;
-    const tugX = eCX + leoR*Math.cos(tugAngle);
-    const tugY = eCY + leoR*Math.sin(tugAngle);
-    ctx.save(); ctx.translate(tugX,tugY); ctx.rotate(tugAngle+Math.PI/2);
-    ctx.fillStyle='#5888a8'; ctx.fillRect(-5,-3,10,6);
-    ctx.fillStyle='rgba(15,70,170,.8)'; ctx.fillRect(-9,-1.5,4,3); ctx.fillRect(5,-1.5,4,3);
-    const tg2=ctx.createRadialGradient(0,0,0,0,0,12);
-    tg2.addColorStop(0,'rgba(0,150,255,.25)'); tg2.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=tg2; ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-    ctx.fillStyle='rgba(0,200,255,.6)';
-    ctx.font=`${Math.round(W*.011)}px Share Tech Mono,monospace`;
-    const lblOff = tugY < H*.4 ? 14 : -10;
-    ctx.textAlign='center'; ctx.fillText('SPACE TUG',tugX,tugY+lblOff); ctx.textAlign='left';
+    // ── MISSION CYCLE ──
+    // Full tug mission: LEO loiter → pod rendezvous → TLI burn → Hohmann
+    // transit → pod release at Moon → return coast to LEO. One full cycle
+    // takes CYCLE seconds; the sub-phase is derived from (t mod CYCLE).
+    const CYCLE = 18;
+    const ct = (t % CYCLE) / CYCLE; // 0..1 through the mission
+    // Sub-phase boundaries (fractions of the cycle)
+    const LOITER_END = 0.18;   // tug parked in LEO
+    const CLOSE_END  = 0.28;   // pod closes 117.5 m/s gap
+    const DOCK_END   = 0.33;   // latch and align
+    const TLI_END    = 0.40;   // 3,082 m/s burn
+    const COAST_END  = 0.68;   // 4.98-day Hohmann coast to Moon
+    const RELEASE_END= 0.74;   // pod dropped into lunar orbit
+    // After RELEASE_END the tug coasts back toward LEO
 
-    // ── ANIMATED CARGO POD (transfer arc) ──
-    const podT=(t*.055)%1; // slow loop
-    const pX=midX+(halfMaj*Math.cos(Math.PI+podT*Math.PI*2));
-    const pY=transferY+(H*.3*Math.sin(Math.PI+podT*Math.PI*2));
-    ctx.save(); ctx.translate(pX,pY);
-    ctx.fillStyle='#c8dce8';
-    ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(2,-3); ctx.lineTo(-5,-3); ctx.lineTo(-6,0); ctx.lineTo(-5,3); ctx.lineTo(2,3); ctx.closePath(); ctx.fill();
-    ctx.fillStyle='#ffcc40';
-    ctx.beginPath(); ctx.moveTo(-6,-2); ctx.lineTo(-11,-1); ctx.lineTo(-11,1); ctx.lineTo(-6,2); ctx.closePath(); ctx.fill();
-    ctx.restore();
+    // Parametric position along the top half of the transfer ellipse.
+    // s=0 at LEO (left tip), s=1 at Moon (right tip). Goes over the top.
+    function transferPos(s) {
+      const ang = Math.PI - s*Math.PI; // π → 0
+      return [midX + halfMaj*Math.cos(ang), transferY - H*0.30*Math.sin(ang)];
+    }
+    // Bottom half for return coast (lower-energy path reference)
+    function returnPos(s) {
+      const ang = Math.PI - s*Math.PI;
+      return [midX + halfMaj*Math.cos(ang), transferY + H*0.22*Math.sin(ang)];
+    }
+
+    // Pod starts at LEO parking node (east side of LEO ring, matching rail-launch rendezvous)
+    const podParkX = eCX + leoR;
+    const podParkY = eCY;
+
+    let tugX, tugY, tugHeading, tugThrust = 0, tugWithPod = false;
+    let podX = null, podY = null, podLabel = null;
+    let phaseLabel = '';
+
+    if (ct < LOITER_END) {
+      // Tug loitering in LEO, slow orbital motion
+      const a = -Math.PI/2 + (ct/LOITER_END) * 1.2;
+      tugX = eCX + leoR*Math.cos(a);
+      tugY = eCY + leoR*Math.sin(a);
+      tugHeading = a + Math.PI/2;
+      phaseLabel = 'LEO LOITER · AWAITING POD';
+    } else if (ct < CLOSE_END) {
+      // Pod rising to rendezvous; tug fires catch burn as pod closes 117.5 m/s
+      const p = (ct - LOITER_END)/(CLOSE_END - LOITER_END);
+      const a = -Math.PI/2 + 1.2 + p*0.6;
+      tugX = eCX + leoR*Math.cos(a);
+      tugY = eCY + leoR*Math.sin(a);
+      tugHeading = a + Math.PI/2;
+      tugThrust = Math.sin(p*Math.PI) * 0.55;
+      // Pod rises from below and slides along the orbit toward the tug
+      const podA = a - 0.45*(1-p);
+      podX = eCX + leoR*Math.cos(podA) + (1-p)*8*Math.cos(podA);
+      podY = eCY + leoR*Math.sin(podA) + (1-p)*8*Math.sin(podA);
+      podLabel = 'CARGO POD';
+      phaseLabel = 'RENDEZVOUS · ΔV 117.5 m/s';
+    } else if (ct < DOCK_END) {
+      // Docked, still in LEO — final latch
+      const p = (ct - CLOSE_END)/(DOCK_END - CLOSE_END);
+      const a = -Math.PI/2 + 1.8 + p*0.15;
+      tugX = eCX + leoR*Math.cos(a);
+      tugY = eCY + leoR*Math.sin(a);
+      tugHeading = a + Math.PI/2;
+      tugWithPod = true;
+      phaseLabel = 'DOCKED · LATCH · PROP ALIGN';
+    } else if (ct < TLI_END) {
+      // TLI burn — tug+pod still near LEO departure point, engine full
+      const p = (ct - DOCK_END)/(TLI_END - DOCK_END);
+      const [sx, sy] = transferPos(0.02 + p*0.05);
+      tugX = sx; tugY = sy;
+      const [nx, ny] = transferPos(0.02 + p*0.05 + 0.02);
+      tugHeading = Math.atan2(ny - sy, nx - sx);
+      tugThrust = 0.95;
+      tugWithPod = true;
+      phaseLabel = 'TLI BURN · 3,082 m/s';
+    } else if (ct < COAST_END) {
+      // Hohmann coast to the Moon
+      const p = (ct - TLI_END)/(COAST_END - TLI_END);
+      const s = 0.07 + p*0.88;
+      const [sx, sy] = transferPos(s);
+      tugX = sx; tugY = sy;
+      const [nx, ny] = transferPos(Math.min(s+0.02,1));
+      tugHeading = Math.atan2(ny - sy, nx - sx);
+      tugWithPod = true;
+      phaseLabel = 'HOHMANN COAST · 4.98 DAYS';
+    } else if (ct < RELEASE_END) {
+      // Pod released into lunar orbit; tug drifts back
+      const p = (ct - COAST_END)/(RELEASE_END - COAST_END);
+      const [sx, sy] = transferPos(0.95);
+      tugX = sx - p*18*Math.cos(0); // slight retrograde drift
+      tugY = sy;
+      tugHeading = 0;
+      // Pod continues toward Moon
+      podX = sx + (mCX - sx) * p;
+      podY = sy + (mCY - sy) * p;
+      podLabel = 'POD → LUNAR ORBIT';
+      phaseLabel = 'POD RELEASE · LUNAR CAPTURE';
+    } else {
+      // Return coast to LEO along the lower half (free return approximation)
+      const p = (ct - RELEASE_END)/(1 - RELEASE_END);
+      const s = 1 - p;
+      const [sx, sy] = returnPos(s);
+      tugX = sx; tugY = sy;
+      const [nx, ny] = returnPos(Math.max(s-0.02,0));
+      tugHeading = Math.atan2(ny - sy, nx - sx);
+      phaseLabel = 'RETURN COAST · AWAIT REFUEL';
+    }
+
+    drawSpaceTug(ctx, tugX, tugY, tugHeading, 0.9, { thrust: tugThrust, withPod: tugWithPod });
+
+    // Draw free-flying pod (when not docked to the tug)
+    if (podX !== null) {
+      ctx.save(); ctx.translate(podX, podY);
+      ctx.fillStyle = '#c8dce8';
+      ctx.beginPath();
+      ctx.moveTo(6,0); ctx.lineTo(2,-3); ctx.lineTo(-5,-3);
+      ctx.lineTo(-6,0); ctx.lineTo(-5,3); ctx.lineTo(2,3);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#ffcc40';
+      ctx.beginPath();
+      ctx.moveTo(-6,-2); ctx.lineTo(-11,-1); ctx.lineTo(-11,1); ctx.lineTo(-6,2);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+      if (podLabel) {
+        ctx.fillStyle = 'rgba(255,204,64,.7)';
+        ctx.font = `${Math.round(W*.009)}px Share Tech Mono,monospace`;
+        ctx.fillText(podLabel, podX+10, podY+12);
+      }
+    }
+
+    // Tug + phase label
+    ctx.fillStyle = 'rgba(0,200,255,.75)';
+    ctx.font = `${Math.round(W*.011)}px Share Tech Mono,monospace`;
+    const lblOff = tugY < H*.4 ? 22 : -18;
+    ctx.textAlign = 'center'; ctx.fillText('SPACE TUG', tugX, tugY+lblOff); ctx.textAlign='left';
+    // Phase status (bottom-left)
+    ctx.fillStyle = 'rgba(0,210,255,.75)';
+    ctx.font = `bold ${Math.round(W*.0105)}px Share Tech Mono,monospace`;
+    ctx.fillText('MISSION PHASE: ' + phaseLabel, W*0.02, H*0.96);
 
     // Stage callouts
     const callouts=[
