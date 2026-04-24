@@ -283,6 +283,29 @@
     .analog-box{background:rgba(0,10,35,.8);border:1px solid rgba(59,130,246,.25);border-left:3px solid var(--accent-blue);padding:1.5rem 2rem;font-family:var(--font-mono);font-size:.85rem;color:var(--text-secondary);line-height:1.8;margin:2rem 0}
     .analog-box strong{color:var(--accent-cyan)}
 
+    /* ── LAUNCH VISUALIZATION ── */
+    .launch-viz-wrap{margin:0;background:#000008;position:relative;overflow:hidden;border-top:1px solid var(--border-blue);border-bottom:1px solid var(--border-blue)}
+    #launch-canvas{display:block;width:100%;height:500px}
+    .launch-phase-bar{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:1rem;padding:.75rem 1rem;background:rgba(0,0,8,.6);flex-wrap:wrap}
+    .phase-pip{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.15em;color:var(--text-muted);padding:.2rem .6rem;border:1px solid rgba(0,80,160,.3);border-radius:1px;transition:color .3s,border-color .3s}
+    .phase-pip.active{color:var(--accent-cyan);border-color:var(--accent-cyan)}
+
+    /* ── ORBITAL DIAGRAM ── */
+    .orbital-wrap{background:rgba(0,3,15,.95);border:1px solid var(--border-blue);border-radius:3px;overflow:hidden;margin-top:2.5rem;position:relative}
+    .orbital-wrap::before{content:'EARTH → LEO → LUNAR ORBIT · MISSION PROFILE';display:block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.25em;color:var(--text-muted);padding:1rem 1.5rem;border-bottom:1px solid rgba(0,60,120,.3)}
+    #orbital-canvas{display:block;width:100%;height:360px}
+
+    /* ── VEHICLE SCHEMATICS ── */
+    .vehicle-schematic{background:rgba(0,3,15,.9);border:1px solid var(--border-blue);border-radius:3px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:1.5rem}
+    .vehicle-schematic svg{max-width:100%;height:auto}
+    .vehicle-label{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.15em;color:var(--text-secondary);text-align:center;text-transform:uppercase}
+    .vehicle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
+
+    /* ── TUNNEL CROSS SECTION ── */
+    .tunnel-xsec{background:rgba(0,3,15,.9);border:1px solid var(--border-blue);border-radius:3px;overflow:hidden;margin-top:1.5rem}
+    .tunnel-xsec-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.2em;color:var(--text-muted);padding:.75rem 1.25rem;border-bottom:1px solid rgba(0,60,120,.25)}
+    #tunnel-canvas{display:block;width:100%;height:280px}
+
     @media(max-width:768px){
       .section{padding:3.5rem 0}
       .hero{padding:5rem 1rem 3rem}
@@ -290,6 +313,9 @@
       .math-block{padding:1.25rem}
       .ref-bottom{flex-wrap:wrap;gap:.5rem;font-size:.65rem;text-align:center}
       .stage-header{flex-direction:column;gap:1rem}
+      #launch-canvas{height:340px}
+      #orbital-canvas{height:260px}
+      #tunnel-canvas{height:200px}
     }
 
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -331,6 +357,19 @@
   </div>
   <div class="scroll-hint">scroll</div>
 </section>
+
+<!-- LAUNCH VISUALIZATION -->
+<div class="launch-viz-wrap">
+  <canvas id="launch-canvas"></canvas>
+  <div class="launch-phase-bar">
+    <span class="phase-pip" id="pip0">BORING CO. TUNNEL</span>
+    <span class="phase-pip" id="pip1">VACUUMGATE EXIT</span>
+    <span class="phase-pip" id="pip2">ATMOSPHERIC ASCENT</span>
+    <span class="phase-pip" id="pip3">SPACE TUG RENDEZVOUS</span>
+    <span class="phase-pip" id="pip4">HOHMANN TRANSFER</span>
+    <span class="phase-pip" id="pip5">LUNAR DELIVERY</span>
+  </div>
+</div>
 
 <div class="section-divider"></div>
 
@@ -423,8 +462,13 @@
       </div>
     </div>
 
-    <!-- ASCII pipeline diagram -->
-    <div class="pipeline-ascii">
+    <!-- Orbital diagram -->
+    <div class="orbital-wrap">
+      <canvas id="orbital-canvas"></canvas>
+    </div>
+
+    <!-- ASCII pipeline diagram (kept for detail) -->
+    <div class="pipeline-ascii" style="margin-top:2rem">
 <pre class="arch-ascii">
 EARTH SURFACE                                                      MOON
     │                                                               │
@@ -517,6 +561,86 @@ EARTH SURFACE                                                      MOON
         <span class="spec-chip">Natural thermal stability</span>
       </div>
     </div>
+
+    <!-- Tunnel cross-section diagram -->
+    <div class="tunnel-xsec">
+      <div class="tunnel-xsec-label">// TUNNEL CROSS-SECTION · BORE PROFILE · MAGLEV + CARGO POD</div>
+      <canvas id="tunnel-canvas"></canvas>
+    </div>
+
+    <!-- TBM + Pod schematics -->
+    <div class="vehicle-grid">
+      <div class="vehicle-schematic">
+        <svg viewBox="0 0 220 180" width="220" height="180" xmlns="http://www.w3.org/2000/svg">
+          <!-- Boring Co TBM schematic -->
+          <defs>
+            <radialGradient id="tbmHead" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1a3a5c"/>
+              <stop offset="100%" stop-color="#0a1a2e"/>
+            </radialGradient>
+          </defs>
+          <text x="110" y="16" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a6a9a" text-anchor="middle" letter-spacing="2">BORING CO. TBM — PRUFROCK CLASS</text>
+          <!-- Body cylinder -->
+          <rect x="70" y="50" width="110" height="80" rx="4" fill="#0a1828" stroke="#1a4a7a" stroke-width="1.5"/>
+          <!-- Body sections -->
+          <line x1="110" y1="50" x2="110" y2="130" stroke="#0d2540" stroke-width="1"/>
+          <line x1="145" y1="50" x2="145" y2="130" stroke="#0d2540" stroke-width="1"/>
+          <!-- Cutting head (circular) -->
+          <circle cx="70" cy="90" r="38" fill="url(#tbmHead)" stroke="#1a5080" stroke-width="2"/>
+          <!-- Radial cutters -->
+          <line x1="70" y1="52" x2="70" y2="128" stroke="#2a7ab0" stroke-width="2.5"/>
+          <line x1="32" y1="90" x2="108" y2="90" stroke="#2a7ab0" stroke-width="2.5"/>
+          <line x1="43" y1="63" x2="97" y2="117" stroke="#2a7ab0" stroke-width="1.5"/>
+          <line x1="43" y1="117" x2="97" y2="63" stroke="#2a7ab0" stroke-width="1.5"/>
+          <!-- Center hub -->
+          <circle cx="70" cy="90" r="8" fill="#1a5080" stroke="#2a9ad0" stroke-width="1.5"/>
+          <circle cx="70" cy="90" r="3" fill="#00b4ff"/>
+          <!-- Tail pipe -->
+          <rect x="180" y="72" width="30" height="36" rx="2" fill="#061018" stroke="#0d3050" stroke-width="1"/>
+          <!-- Support legs -->
+          <line x1="90" y1="130" x2="85" y2="152" stroke="#1a4a7a" stroke-width="2"/>
+          <line x1="115" y1="130" x2="110" y2="152" stroke="#1a4a7a" stroke-width="2"/>
+          <line x1="140" y1="130" x2="140" y2="152" stroke="#1a4a7a" stroke-width="2"/>
+          <line x1="83" y1="152" x2="90" y2="152" stroke="#1a4a7a" stroke-width="3"/>
+          <line x1="108" y1="152" x2="115" y2="152" stroke="#1a4a7a" stroke-width="3"/>
+          <line x1="137" y1="152" x2="144" y2="152" stroke="#1a4a7a" stroke-width="3"/>
+          <!-- Labels -->
+          <text x="70" y="170" font-family="Share Tech Mono,monospace" font-size="7" fill="#3a7ab0" text-anchor="middle">CUTTER HEAD</text>
+          <text x="155" y="45" font-family="Share Tech Mono,monospace" font-size="7" fill="#2a5a80" text-anchor="middle">BODY</text>
+        </svg>
+        <div class="vehicle-label">Boring Company TBM · Tunnel Boring Machine</div>
+      </div>
+
+      <div class="vehicle-schematic">
+        <!-- BGKPJR Cargo Pod -->
+        <svg viewBox="0 0 220 180" width="220" height="180" xmlns="http://www.w3.org/2000/svg">
+          <text x="110" y="16" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a6a9a" text-anchor="middle" letter-spacing="2">BGKPJR CARGO POD</text>
+          <!-- Nose cone -->
+          <polygon points="195,90 160,72 160,108" fill="#c8d8e8" stroke="#5090c0" stroke-width="1.5"/>
+          <!-- Body -->
+          <rect x="60" y="72" width="100" height="36" rx="3" fill="#a0b8cc" stroke="#5090c0" stroke-width="1.5"/>
+          <!-- Cargo bay markings -->
+          <rect x="75" y="76" width="70" height="28" rx="2" fill="#0a2040" stroke="#1a4060" stroke-width="1"/>
+          <text x="110" y="94" font-family="Share Tech Mono,monospace" font-size="8" fill="#3a8ab8" text-anchor="middle">CARGO</text>
+          <!-- Engine nozzles -->
+          <polygon points="60,80 30,72 30,108 60,100" fill="#7090a8" stroke="#3a6080" stroke-width="1.5"/>
+          <ellipse cx="30" cy="90" rx="8" ry="14" fill="#0a1828" stroke="#2a5080" stroke-width="1.5"/>
+          <!-- Engine glow -->
+          <ellipse cx="22" cy="90" rx="5" ry="10" fill="#ff8020" opacity="0.7"/>
+          <ellipse cx="15" cy="90" rx="3" vy="6" ry="6" fill="#ffcc40" opacity="0.5"/>
+          <!-- Rail guidance fins (top/bottom) -->
+          <rect x="80" y="62" width="60" height="10" rx="2" fill="#708898" stroke="#3a6080" stroke-width="1"/>
+          <rect x="80" y="108" width="60" height="10" rx="2" fill="#708898" stroke="#3a6080" stroke-width="1"/>
+          <!-- Dimensions -->
+          <line x1="60" y1="125" x2="195" y2="125" stroke="#1a4060" stroke-width="0.7" stroke-dasharray="3,3"/>
+          <line x1="60" y1="122" x2="60" y2="128" stroke="#1a4060" stroke-width="1"/>
+          <line x1="195" y1="122" x2="195" y2="128" stroke="#1a4060" stroke-width="1"/>
+          <text x="127" y="140" font-family="Share Tech Mono,monospace" font-size="8" fill="#2a5a80" text-anchor="middle">~5 m</text>
+          <text x="110" y="165" font-family="Share Tech Mono,monospace" font-size="8" fill="#2a6090" text-anchor="middle">2,000–5,000 kg PAYLOAD · 20g RATED</text>
+        </svg>
+        <div class="vehicle-label">Unmanned Cargo Pod · 20g–50g Rated</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -607,6 +731,44 @@ EARTH SURFACE                                                      MOON
         budget is spent, it waits. The key advantage: the Tug is reusable over hundreds of missions.
         Its dry mass (~2,500 kg) is amortized across every kg it ever delivers to the Moon.
       </p>
+      <!-- Space Tug schematic -->
+      <div class="vehicle-schematic" style="flex-direction:row;flex-wrap:wrap;gap:2rem;justify-content:flex-start;align-items:center">
+        <svg viewBox="0 0 260 140" width="260" height="140" xmlns="http://www.w3.org/2000/svg">
+          <text x="130" y="14" font-family="Share Tech Mono,monospace" font-size="9" fill="#2a8ab0" text-anchor="middle" letter-spacing="2">SPACE TUG · LEO DEPOT · PERMANENT ORBIT</text>
+          <!-- Main body -->
+          <rect x="80" y="45" width="100" height="50" rx="5" fill="#0d2540" stroke="#2a6090" stroke-width="2"/>
+          <!-- Propellant tanks (spherical) -->
+          <circle cx="80" cy="56" r="14" fill="#061828" stroke="#1a5080" stroke-width="1.5"/>
+          <circle cx="80" cy="84" r="14" fill="#061828" stroke="#1a5080" stroke-width="1.5"/>
+          <text x="80" y="57" font-family="Share Tech Mono,monospace" font-size="6" fill="#1a6090" text-anchor="middle">LH₂</text>
+          <text x="80" y="85" font-family="Share Tech Mono,monospace" font-size="6" fill="#1a6090" text-anchor="middle">LOX</text>
+          <!-- Engine bell -->
+          <polygon points="66,60 50,52 50,88 66,80" fill="#0a1e38" stroke="#1a5080" stroke-width="1.5"/>
+          <ellipse cx="50" cy="70" rx="8" ry="16" fill="#05101e" stroke="#1a4070" stroke-width="1.5"/>
+          <!-- Engine plume hint -->
+          <polygon points="42,65 20,62 20,78 42,75" fill="#ff9030" opacity="0.5"/>
+          <polygon points="42,67 10,68 10,72 42,73" fill="#ffdd60" opacity="0.4"/>
+          <!-- Solar panels -->
+          <rect x="128" y="28" width="40" height="18" rx="1" fill="#0a2858" stroke="#1a4898" stroke-width="1.5"/>
+          <rect x="128" y="94" width="40" height="18" rx="1" fill="#0a2858" stroke="#1a4898" stroke-width="1.5"/>
+          <!-- Panel cells -->
+          <line x1="140" y1="28" x2="140" y2="46" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="152" y1="28" x2="152" y2="46" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="164" y1="28" x2="164" y2="46" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="128" y1="37" x2="168" y2="37" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="140" y1="94" x2="140" y2="112" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="152" y1="94" x2="152" y2="112" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="164" y1="94" x2="164" y2="112" stroke="#0d3870" stroke-width="0.7"/>
+          <line x1="128" y1="103" x2="168" y2="103" stroke="#0d3870" stroke-width="0.7"/>
+          <!-- Docking port -->
+          <circle cx="185" cy="70" r="10" fill="#061018" stroke="#2a7ab0" stroke-width="2"/>
+          <circle cx="185" cy="70" r="5" fill="#0a2040" stroke="#1a5080" stroke-width="1.5"/>
+          <circle cx="185" cy="70" r="2" fill="#00b4ff"/>
+          <!-- Labels -->
+          <text x="130" y="130" font-family="Share Tech Mono,monospace" font-size="7.5" fill="#2a7ab0" text-anchor="middle">2,500 kg DRY · Isp 450s · ΔV 4.0 km/s · NEVER RETURNS</text>
+        </svg>
+      </div>
+
       <div class="spec-inline">
         <span class="spec-chip moon">~2,500 kg dry mass</span>
         <span class="spec-chip moon">~400 km LEO parking orbit</span>
@@ -645,6 +807,70 @@ EARTH SURFACE                                                      MOON
         Blue Moon Mk2 is already contracted for NASA's Artemis program. BGKPJR cargo pods are
         designed to match Blue Moon's cargo envelope for direct compatibility.
       </p>
+
+      <!-- Blue Moon Mk2 schematic -->
+      <div class="vehicle-schematic" style="flex-direction:row;align-items:center;flex-wrap:wrap;gap:2rem;justify-content:flex-start">
+        <svg viewBox="0 0 160 280" width="140" height="260" xmlns="http://www.w3.org/2000/svg">
+          <text x="80" y="14" font-family="Share Tech Mono,monospace" font-size="8" fill="#5090c0" text-anchor="middle" letter-spacing="1">BLUE MOON Mk2</text>
+          <!-- Payload fairing (top) -->
+          <path d="M55,30 Q80,18 105,30 L108,58 L52,58 Z" fill="#d8e8f4" stroke="#8ab8d8" stroke-width="1.5"/>
+          <!-- Payload interface ring -->
+          <rect x="52" y="56" width="56" height="8" rx="2" fill="#c0d4e8" stroke="#6090b8" stroke-width="1.5"/>
+          <!-- Ascent module -->
+          <rect x="48" y="64" width="64" height="50" rx="4" fill="#e8f2fa" stroke="#6090b8" stroke-width="1.5"/>
+          <!-- Windows -->
+          <circle cx="70" cy="82" r="5" fill="#0a2848" stroke="#4080b0" stroke-width="1"/>
+          <circle cx="90" cy="82" r="5" fill="#0a2848" stroke="#4080b0" stroke-width="1"/>
+          <!-- Blue Origin logo area -->
+          <rect x="65" y="100" width="30" height="8" rx="2" fill="#0040a0" stroke="#2060c0" stroke-width="1"/>
+          <text x="80" y="107" font-family="Share Tech Mono,monospace" font-size="5" fill="#80b0ff" text-anchor="middle">BLUE ORIGIN</text>
+          <!-- Mid section / descent stage -->
+          <rect x="44" y="114" width="72" height="80" rx="3" fill="#c8d8e8" stroke="#5080a8" stroke-width="1.5"/>
+          <!-- Propellant tanks visible in descent stage -->
+          <circle cx="62" cy="140" r="15" fill="#a8c0d8" stroke="#4070a0" stroke-width="1"/>
+          <circle cx="98" cy="140" r="15" fill="#a8c0d8" stroke="#4070a0" stroke-width="1"/>
+          <text x="62" y="141" font-family="Share Tech Mono,monospace" font-size="5" fill="#205080" text-anchor="middle">LH₂</text>
+          <text x="98" y="141" font-family="Share Tech Mono,monospace" font-size="5" fill="#205080" text-anchor="middle">LOX</text>
+          <!-- Engine section -->
+          <rect x="50" y="194" width="60" height="20" rx="2" fill="#a0b8cc" stroke="#4070a0" stroke-width="1.5"/>
+          <!-- Engine bells (4) -->
+          <polygon points="56,214 51,218 51,234 56,230" fill="#809ab0" stroke="#406080" stroke-width="1"/>
+          <polygon points="68,214 63,218 63,236 68,232" fill="#809ab0" stroke="#406080" stroke-width="1"/>
+          <polygon points="92,214 97,218 97,234 92,230" fill="#809ab0" stroke="#406080" stroke-width="1"/>
+          <polygon points="104,214 109,218 109,234 104,230" fill="#809ab0" stroke="#406080" stroke-width="1"/>
+          <!-- Engine glow -->
+          <ellipse cx="53" cy="234" rx="4" ry="6" fill="#4080ff" opacity="0.6"/>
+          <ellipse cx="65" cy="237" rx="4" ry="7" fill="#6090ff" opacity="0.5"/>
+          <ellipse cx="95" cy="234" rx="4" ry="6" fill="#4080ff" opacity="0.6"/>
+          <ellipse cx="107" cy="237" rx="4" ry="7" fill="#6090ff" opacity="0.5"/>
+          <!-- Landing legs (4, 2 visible) -->
+          <line x1="52" y1="200" x2="22" y2="265" stroke="#7090b0" stroke-width="2.5"/>
+          <line x1="108" y1="200" x2="138" y2="265" stroke="#7090b0" stroke-width="2.5"/>
+          <!-- Foot pads -->
+          <ellipse cx="22" cy="266" rx="10" ry="4" fill="#5080a0" stroke="#3060808" stroke-width="1.5"/>
+          <ellipse cx="138" cy="266" rx="10" ry="4" fill="#5080a0" stroke="#306080" stroke-width="1.5"/>
+          <!-- Leg struts -->
+          <line x1="44" y1="215" x2="22" y2="255" stroke="#5070909" stroke-width="1.5" stroke-dasharray="2,2"/>
+          <line x1="116" y1="215" x2="138" y2="255" stroke="#507090" stroke-width="1.5" stroke-dasharray="2,2"/>
+          <!-- Crane arm -->
+          <line x1="108" y1="90" x2="148" y2="70" stroke="#4080b0" stroke-width="2"/>
+          <line x1="148" y1="70" x2="148" y2="110" stroke="#4080b0" stroke-width="1.5"/>
+          <rect x="142" y="108" width="12" height="10" rx="1" fill="#2060a0" stroke="#3070b0" stroke-width="1"/>
+          <text x="155" y="88" font-family="Share Tech Mono,monospace" font-size="6" fill="#4080b0">CRANE</text>
+          <text x="80" y="275" font-family="Share Tech Mono,monospace" font-size="7" fill="#4080b0" text-anchor="middle">~16 m TALL</text>
+        </svg>
+        <div style="flex:1;min-width:200px">
+          <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);line-height:1.8">
+            <div style="color:#fff;font-weight:700;margin-bottom:.5rem">Blue Moon Mark 2 — Key Facts</div>
+            <div>▸ ~16 m tall · two-stage vehicle</div>
+            <div>▸ Cryogenic BE-7 engines (LH₂/LOX)</div>
+            <div>▸ 20,000+ kg payload to lunar surface</div>
+            <div>▸ Crane system for precision cargo placement</div>
+            <div>▸ Already contracted for Artemis HLS</div>
+            <div>▸ BGKPJR pods designed to match cargo envelope</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="stage-card-lg green-left">
@@ -1445,6 +1671,593 @@ EARTH SURFACE                                                      MOON
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
+})();
+</script>
+
+<!-- LAUNCH VISUALIZATION + ORBITAL DIAGRAM + TUNNEL XSEC -->
+<script>
+(function() {
+  // ── LAUNCH CANVAS ──────────────────────────────────────────────
+  const lc = document.getElementById('launch-canvas');
+  if (!lc) return;
+  const lctx = lc.getContext('2d');
+  const pips = [0,1,2,3,4,5].map(i => document.getElementById('pip'+i));
+
+  function resizeLaunch() {
+    lc.width  = lc.offsetWidth;
+    lc.height = lc.offsetHeight || 500;
+  }
+  resizeLaunch();
+  window.addEventListener('resize', resizeLaunch);
+
+  // Stars for launch scene
+  const lstars = Array.from({length:220}, () => ({
+    x: Math.random(), y: Math.random() * 0.55,
+    r: Math.random() * 1.4 + 0.2,
+    a: Math.random() * 0.7 + 0.2
+  }));
+
+  const LOOP = 16; // seconds per cycle
+
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+  function bezier3(p0,p1,p2,p3,t) {
+    const u=1-t;
+    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
+  }
+
+  function drawLaunch(ts) {
+    const W = lc.width, H = lc.height;
+    const t  = (ts * 0.001) % LOOP;
+    const ctx = lctx;
+
+    // Background
+    const bgGrad = ctx.createLinearGradient(0,0,0,H);
+    bgGrad.addColorStop(0,   '#000008');
+    bgGrad.addColorStop(0.5, '#000a20');
+    bgGrad.addColorStop(0.72,'#001438');
+    bgGrad.addColorStop(1,   '#001a44');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0,0,W,H);
+
+    // Stars
+    const tSec = ts * 0.001;
+    lstars.forEach(s => {
+      const a = s.a * (0.55 + 0.45 * Math.sin(tSec * 1.8 + s.x * 12));
+      ctx.globalAlpha = a;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(s.x*W, s.y*H, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // Moon (upper right)
+    const mx = W*0.87, my = H*0.11, mr = Math.min(W,H)*0.075;
+    const mg = ctx.createRadialGradient(mx-mr*.25,my-mr*.25,mr*.08,mx,my,mr);
+    mg.addColorStop(0,'#ddeeff'); mg.addColorStop(0.5,'#b0c8dc'); mg.addColorStop(1,'#6a8aa0');
+    ctx.fillStyle=mg; ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fill();
+    // craters
+    [[.3,-.2,.1],[-.2,.3,.07],[.1,.25,.05]].forEach(([dx,dy,dr])=>{
+      ctx.fillStyle='rgba(70,95,115,.45)';
+      ctx.beginPath(); ctx.arc(mx+dx*mr,my+dy*mr,dr*mr,0,Math.PI*2); ctx.fill();
+    });
+    // atmosphere glow around moon when transfer active
+    if (t >= 11 && t < 16) {
+      const p = (t-11)/5;
+      ctx.strokeStyle = `rgba(251,191,36,${0.4+0.3*Math.sin(p*Math.PI*6)})`;
+      ctx.lineWidth=2; ctx.beginPath(); ctx.arc(mx,my,mr+7,0,Math.PI*2); ctx.stroke();
+    }
+
+    // Atmospheric glow on horizon
+    const horizY = H * 0.67;
+    const atmGrad = ctx.createLinearGradient(0, horizY-80, 0, horizY+15);
+    atmGrad.addColorStop(0,'rgba(0,30,80,0)');
+    atmGrad.addColorStop(0.6,'rgba(0,50,120,.18)');
+    atmGrad.addColorStop(1,'rgba(0,80,180,.06)');
+    ctx.fillStyle=atmGrad; ctx.fillRect(0,horizY-80,W,95);
+
+    // Earth surface
+    const earthGrad = ctx.createLinearGradient(0,horizY,0,H);
+    earthGrad.addColorStop(0,'#091522');
+    earthGrad.addColorStop(0.4,'#050e18');
+    earthGrad.addColorStop(1,'#020810');
+    ctx.beginPath();
+    ctx.moveTo(0, horizY+12);
+    ctx.quadraticCurveTo(W*.5, horizY-6, W, horizY+10);
+    ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+    ctx.fillStyle = earthGrad; ctx.fill();
+    // horizon line
+    ctx.strokeStyle='rgba(0,70,140,.35)'; ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(0,horizY+12); ctx.quadraticCurveTo(W*.5,horizY-6,W,horizY+10);
+    ctx.stroke();
+
+    // ── TUNNEL ──
+    const tunnelAngle = -22 * Math.PI/180;
+    const exitX = W * 0.22, exitY = horizY + 4;
+    ctx.save();
+    ctx.translate(exitX, exitY);
+    ctx.rotate(tunnelAngle);
+    const tLen = W * 0.55;
+    // Rock fill
+    ctx.fillStyle='rgba(4,12,25,.96)';
+    ctx.fillRect(-tLen-4, -16, tLen+4, 32);
+    // Tunnel interior
+    ctx.fillStyle='#020810';
+    ctx.fillRect(-tLen, -12, tLen, 24);
+    // EM coils
+    const coilSpacing=38;
+    for (let cx=-tLen+15; cx<-5; cx+=coilSpacing) {
+      const pulse = 0.12 + 0.55*Math.max(0,Math.sin(tSec*9+cx*.06));
+      const inTunnel = t < 3;
+      ctx.strokeStyle=`rgba(0,200,255,${pulse*(inTunnel?0.9:0.3)})`;
+      ctx.lineWidth=2.2;
+      ctx.beginPath(); ctx.moveTo(cx,-12); ctx.lineTo(cx,12); ctx.stroke();
+    }
+    // Rails
+    ctx.strokeStyle='rgba(0,100,180,.5)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(-tLen,-5); ctx.lineTo(0,-5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-tLen, 5); ctx.lineTo(0, 5); ctx.stroke();
+    // Speed glow when pod in tunnel
+    if (t < 3) {
+      const p = easeInOut(t/3);
+      const glGrad = ctx.createLinearGradient(-tLen*0.5,-5,0,-5);
+      glGrad.addColorStop(0,'rgba(0,180,255,0)');
+      glGrad.addColorStop(1,`rgba(0,230,255,${0.5*p})`);
+      ctx.fillStyle=glGrad;
+      ctx.fillRect(-tLen*.5,-11,tLen*.5,22);
+    }
+    ctx.restore();
+    // Tunnel mouth outline
+    ctx.save();
+    ctx.translate(exitX,exitY); ctx.rotate(tunnelAngle);
+    ctx.strokeStyle='rgba(0,140,220,.7)'; ctx.lineWidth=2;
+    ctx.strokeRect(-2,-13,5,26);
+    ctx.restore();
+
+    // ── ORBIT RING ──
+    const orbitCX = W*0.28, orbitCY = H*0.82;
+    const orbitRX = H*0.6, orbitRY = H*0.15;
+    if (t >= 6) {
+      ctx.strokeStyle='rgba(0,160,255,.22)'; ctx.lineWidth=1.2;
+      ctx.setLineDash([5,10]);
+      ctx.beginPath();
+      ctx.ellipse(orbitCX,orbitCY,orbitRX,orbitRY,0,0,Math.PI*2);
+      ctx.stroke(); ctx.setLineDash([]);
+      // LEO label
+      ctx.fillStyle='rgba(0,160,255,.5)';
+      ctx.font=`${Math.round(W*.01)}px Share Tech Mono,monospace`;
+      ctx.fillText('LEO 400 km', orbitCX+orbitRX*.55, orbitCY-orbitRY-6);
+    }
+
+    // ── TRAJECTORY ARC ──
+    const arcTX=W*.72, arcTY=H*.2;
+    if (t >= 3.5 && t < 11) {
+      ctx.setLineDash([4,8]);
+      ctx.strokeStyle='rgba(0,200,255,.2)'; ctx.lineWidth=1.5;
+      ctx.beginPath();
+      const steps=60;
+      for (let i=0;i<=steps;i++) {
+        const tp=i/steps;
+        const x=bezier3(exitX,exitX+(arcTX-exitX)*.18,exitX+(arcTX-exitX)*.58,arcTX,tp);
+        const y=bezier3(exitY,exitY-H*.14,arcTY+H*.04,arcTY,tp);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // ── POD POSITION ──
+    let podX=0,podY=0,podVX=1,podVY=0,podVisible=false;
+
+    if (t < 3) { // Tunnel phase
+      const p=easeInOut(t/3);
+      const tx2=-tLen*(1-p)*0.95;
+      podX=exitX+tx2*Math.cos(tunnelAngle);
+      podY=exitY+tx2*Math.sin(tunnelAngle);
+      podVX=Math.cos(tunnelAngle); podVY=Math.sin(tunnelAngle);
+      podVisible=true;
+    } else if (t < 3.7) { // Exit flash
+      podX=exitX; podY=exitY;
+      podVX=Math.cos(tunnelAngle); podVY=Math.sin(tunnelAngle);
+      podVisible=true;
+      // FLASH
+      const fp=(t-3)/.7;
+      const fr=90*Math.sin(fp*Math.PI);
+      if (fr>0) {
+        const fg=ctx.createRadialGradient(podX,podY,0,podX,podY,fr);
+        fg.addColorStop(0,`rgba(255,248,180,${.95*Math.sin(fp*Math.PI)})`);
+        fg.addColorStop(.35,`rgba(255,160,40,${.7*Math.sin(fp*Math.PI)})`);
+        fg.addColorStop(1,'rgba(255,80,0,0)');
+        ctx.fillStyle=fg;
+        ctx.beginPath(); ctx.arc(podX,podY,fr,0,Math.PI*2); ctx.fill();
+      }
+    } else if (t < 8) { // Ascent
+      const p=easeInOut((t-3.7)/4.3);
+      podX=bezier3(exitX,exitX+(arcTX-exitX)*.18,exitX+(arcTX-exitX)*.58,arcTX,p);
+      podY=bezier3(exitY,exitY-H*.14,arcTY+H*.04,arcTY,p);
+      const p2=Math.min(p+.01,1);
+      const x2=bezier3(exitX,exitX+(arcTX-exitX)*.18,exitX+(arcTX-exitX)*.58,arcTX,p2);
+      const y2=bezier3(exitY,exitY-H*.14,arcTY+H*.04,arcTY,p2);
+      const dl=Math.sqrt((x2-podX)**2+(y2-podY)**2)||1;
+      podVX=(x2-podX)/dl; podVY=(y2-podY)/dl;
+      podVisible=true;
+      // Rocket plume
+      const plen=35+Math.random()*8;
+      const pg=ctx.createLinearGradient(podX,podY,podX-podVX*plen,podY-podVY*plen);
+      pg.addColorStop(0,'rgba(255,200,80,.9)');
+      pg.addColorStop(.4,'rgba(255,90,15,.6)');
+      pg.addColorStop(1,'rgba(255,40,0,0)');
+      ctx.save(); ctx.translate(podX,podY); ctx.rotate(Math.atan2(podVY,podVX));
+      ctx.beginPath(); ctx.moveTo(-4,-4); ctx.lineTo(-4,4); ctx.lineTo(-plen+(Math.random()*4-2),0); ctx.closePath();
+      ctx.fillStyle=pg; ctx.fill(); ctx.restore();
+    } else if (t < 11) { // Orbit
+      const p=(t-8)/3;
+      const ang=-0.85-p*.9;
+      podX=orbitCX+orbitRX*Math.cos(ang);
+      podY=orbitCY+orbitRY*Math.sin(ang);
+      podVX=-Math.sin(ang); podVY=Math.cos(ang)*(orbitRY/orbitRX);
+      podVisible=true;
+      // Space Tug (ahead on orbit)
+      const ta=ang+1.2;
+      const tx3=orbitCX+orbitRX*Math.cos(ta);
+      const ty3=orbitCY+orbitRY*Math.sin(ta);
+      ctx.save(); ctx.translate(tx3,ty3);
+      ctx.fillStyle='#6090b0'; ctx.fillRect(-7,-4,14,8);
+      ctx.fillStyle='rgba(20,80,180,.7)'; ctx.fillRect(-12,-2.5,5,5); ctx.fillRect(7,-2.5,5,5);
+      ctx.fillStyle='#4080b0'; ctx.beginPath(); ctx.moveTo(-9,-3); ctx.lineTo(-13,-5); ctx.lineTo(-13,5); ctx.lineTo(-9,3); ctx.closePath(); ctx.fill();
+      const tg=ctx.createRadialGradient(0,0,0,0,0,16);
+      tg.addColorStop(0,'rgba(0,160,255,.2)'); tg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(0,0,16,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle='rgba(0,200,255,.55)';
+      ctx.font=`${Math.round(W*.009)}px Share Tech Mono,monospace`;
+      ctx.fillText('SPACE TUG',tx3+10,ty3-7);
+    } else { // Transfer
+      const p=(t-11)/5;
+      const startX=arcTX, startY=arcTY;
+      podX=startX+(mx-startX)*p;
+      podY=startY+(my-startY)*p - Math.sin(p*Math.PI)*40;
+      podVX=1; podVY=-0.3; podVisible=true;
+      // Transfer path
+      ctx.strokeStyle='rgba(251,191,36,.3)'; ctx.lineWidth=1.5;
+      ctx.setLineDash([6,10]);
+      ctx.beginPath(); ctx.moveTo(startX,startY);
+      const cpx=(startX+mx)*.5, cpy=(startY+my)*.5-50;
+      ctx.quadraticCurveTo(cpx,cpy,mx,my);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // Draw pod
+    if (podVisible) {
+      const ang=Math.atan2(podVY,podVX);
+      ctx.save(); ctx.translate(podX,podY); ctx.rotate(ang);
+      // Speed lines in tunnel
+      if (t<3) {
+        for (let i=0;i<5;i++) {
+          const lx=-(Math.random()*30+10)*(t/3);
+          const ly=(Math.random()-.5)*8;
+          ctx.strokeStyle=`rgba(0,200,255,${.3*(t/3)})`;
+          ctx.lineWidth=.8;
+          ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(lx-(Math.random()*15+5),ly); ctx.stroke();
+        }
+      }
+      // Pod body
+      ctx.fillStyle='#ccdae6';
+      ctx.beginPath();
+      ctx.moveTo(11,0); ctx.lineTo(5,-5); ctx.lineTo(-8,-5); ctx.lineTo(-10,0); ctx.lineTo(-8,5); ctx.lineTo(5,5);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#e2eef8';
+      ctx.beginPath(); ctx.moveTo(11,0); ctx.lineTo(5,-3); ctx.lineTo(5,3); ctx.closePath(); ctx.fill();
+      if (t<3) {
+        ctx.shadowBlur=14; ctx.shadowColor='#00e5ff';
+        ctx.strokeStyle='rgba(0,229,255,.5)'; ctx.lineWidth=1;
+        ctx.strokeRect(-9,-4.5,18,9);
+        ctx.shadowBlur=0;
+      }
+      ctx.restore();
+    }
+
+    // Phase label
+    const phases = [
+      [0,3,'STAGE 2 · ELECTROMAGNETIC ACCELERATION · 20g · 12 km TUNNEL'],
+      [3,3.7,'VACUUMGATE · LH₂ DETONATION SEAL · PATENT IP'],
+      [3.7,8,'ATMOSPHERIC ASCENT · ROCKET IGNITION · TARGETING LEO'],
+      [8,11,'STAGE 3 · SPACE TUG RENDEZVOUS · LEO 400 km'],
+      [11,14,'HOHMANN TRANSFER · ΔV 3.1 km/s · 3-DAY TRANSIT TO MOON'],
+      [14,16,'STAGE 4–5 · BLUE MOON Mk2 · LUNAR SURFACE DELIVERY']
+    ];
+    const pipIdx = [0,1,2,3,4,5];
+    pips.forEach((p,i)=>p&&p.classList.remove('active'));
+    phases.forEach(([s,e,lbl],i) => {
+      if (t>=s && t<e) {
+        const p=(t-s)/(e-s);
+        const a=Math.min(1,Math.min(p*6,(1-p)*6));
+        ctx.fillStyle=`rgba(0,210,255,${a*.85})`;
+        ctx.font=`bold ${Math.round(W*.0105)}px Share Tech Mono,monospace`;
+        ctx.textAlign='center';
+        ctx.fillText(lbl,W/2,H*.055);
+        ctx.textAlign='left';
+        if (pips[i]) pips[i].classList.add('active');
+      }
+    });
+
+    requestAnimationFrame(drawLaunch);
+  }
+  requestAnimationFrame(drawLaunch);
+
+  // ── ORBITAL DIAGRAM ──────────────────────────────────────────────
+  const oc = document.getElementById('orbital-canvas');
+  if (!oc) return;
+  const octx = oc.getContext('2d');
+
+  function resizeOrbital() {
+    oc.width  = oc.offsetWidth;
+    oc.height = oc.offsetHeight || 360;
+  }
+  resizeOrbital();
+  window.addEventListener('resize', resizeOrbital);
+
+  function drawOrbital(ts) {
+    const W=oc.width, H=oc.height, ctx=octx, t=ts*.001;
+    ctx.clearRect(0,0,W,H);
+
+    // Background
+    ctx.fillStyle='#000610'; ctx.fillRect(0,0,W,H);
+
+    // Stars
+    if (!drawOrbital._stars) {
+      drawOrbital._stars = Array.from({length:120},()=>({
+        x:Math.random()*W, y:Math.random()*H,
+        r:Math.random()*.9+.2, a:Math.random()*.5+.1
+      }));
+    }
+    drawOrbital._stars.forEach(s=>{
+      ctx.globalAlpha=s.a*(0.6+0.4*Math.sin(t*1.5+s.x*.03));
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+
+    const eCX = W*.2, eCY = H*.5; // Earth center
+    const eR  = Math.min(W,H)*.12; // Earth radius
+    const mCX = W*.82, mCY = H*.5; // Moon center
+    const mR  = Math.min(W,H)*.055;
+
+    // ── TRANSFER ELLIPSE ──
+    // Transfer orbit from LEO to Moon
+    const halfMaj=(mCX-eCX)*.54;
+    const midX=(eCX+mCX)*.5;
+    const transferY=H*.5;
+    ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.lineWidth=1.5;
+    ctx.setLineDash([8,14]);
+    ctx.beginPath(); ctx.ellipse(midX,transferY,halfMaj,H*.3,0,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Transfer label
+    ctx.fillStyle='rgba(251,191,36,.55)';
+    ctx.font=`${Math.round(W*.012)}px Share Tech Mono,monospace`;
+    ctx.textAlign='center';
+    ctx.fillText('HOHMANN TRANSFER · ΔV 3.1 km/s · 3 DAYS',midX,H*.14);
+    ctx.textAlign='left';
+
+    // ── LEO RING ──
+    const leoR = eR*1.65;
+    ctx.strokeStyle='rgba(0,160,255,.3)'; ctx.lineWidth=1.2;
+    ctx.setLineDash([4,8]);
+    ctx.beginPath(); ctx.arc(eCX,eCY,leoR,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,160,255,.5)';
+    ctx.font=`${Math.round(W*.011)}px Share Tech Mono,monospace`;
+    ctx.fillText('LEO',eCX-leoR*.3,eCY-leoR-6);
+
+    // ── EARTH ──
+    const earthG = ctx.createRadialGradient(eCX-eR*.3,eCY-eR*.3,eR*.05,eCX,eCY,eR);
+    earthG.addColorStop(0,'#2a70c8');
+    earthG.addColorStop(0.45,'#1a50a0');
+    earthG.addColorStop(0.75,'#0a3070');
+    earthG.addColorStop(1,'#050f28');
+    ctx.fillStyle=earthG; ctx.beginPath(); ctx.arc(eCX,eCY,eR,0,Math.PI*2); ctx.fill();
+    // Atmosphere glow
+    const atmG=ctx.createRadialGradient(eCX,eCY,eR*.88,eCX,eCY,eR*1.15);
+    atmG.addColorStop(0,'rgba(80,160,255,.2)');
+    atmG.addColorStop(1,'rgba(0,80,200,0)');
+    ctx.fillStyle=atmG; ctx.beginPath(); ctx.arc(eCX,eCY,eR*1.15,0,Math.PI*2); ctx.fill();
+    // Land masses (simplified)
+    ctx.fillStyle='rgba(40,120,60,.45)';
+    ctx.beginPath(); ctx.ellipse(eCX-eR*.1,eCY-eR*.1,eR*.35,eR*.25,-0.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(eCX+eR*.2,eCY+eR*.1,eR*.25,eR*.2,0.6,0,Math.PI*2); ctx.fill();
+    // Earth label
+    ctx.fillStyle='rgba(100,180,255,.7)';
+    ctx.font=`bold ${Math.round(W*.014)}px Orbitron,monospace`;
+    ctx.textAlign='center'; ctx.fillText('EARTH',eCX,eCY+eR+18); ctx.textAlign='left';
+
+    // ── MOON ──
+    const moonG=ctx.createRadialGradient(mCX-mR*.25,mCY-mR*.25,mR*.05,mCX,mCY,mR);
+    moonG.addColorStop(0,'#dce8f4');
+    moonG.addColorStop(0.5,'#a8bece');
+    moonG.addColorStop(1,'#607888');
+    ctx.fillStyle=moonG; ctx.beginPath(); ctx.arc(mCX,mCY,mR,0,Math.PI*2); ctx.fill();
+    [[.28,-.2,.1],[-.18,.25,.07],[.08,.2,.055]].forEach(([dx,dy,dr])=>{
+      ctx.fillStyle='rgba(60,85,105,.5)';
+      ctx.beginPath(); ctx.arc(mCX+dx*mR,mCY+dy*mR,dr*mR,0,Math.PI*2); ctx.fill();
+    });
+    ctx.fillStyle='rgba(200,220,240,.7)';
+    ctx.font=`bold ${Math.round(W*.013)}px Orbitron,monospace`;
+    ctx.textAlign='center'; ctx.fillText('MOON',mCX,mCY+mR+16); ctx.textAlign='left';
+
+    // ── SPACE TUG (animated on LEO) ──
+    const tugAngle = t * 0.4;
+    const tugX = eCX + leoR*Math.cos(tugAngle);
+    const tugY = eCY + leoR*Math.sin(tugAngle);
+    ctx.save(); ctx.translate(tugX,tugY); ctx.rotate(tugAngle+Math.PI/2);
+    ctx.fillStyle='#5888a8'; ctx.fillRect(-5,-3,10,6);
+    ctx.fillStyle='rgba(15,70,170,.8)'; ctx.fillRect(-9,-1.5,4,3); ctx.fillRect(5,-1.5,4,3);
+    const tg2=ctx.createRadialGradient(0,0,0,0,0,12);
+    tg2.addColorStop(0,'rgba(0,150,255,.25)'); tg2.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=tg2; ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle='rgba(0,200,255,.6)';
+    ctx.font=`${Math.round(W*.011)}px Share Tech Mono,monospace`;
+    const lblOff = tugY < H*.4 ? 14 : -10;
+    ctx.textAlign='center'; ctx.fillText('SPACE TUG',tugX,tugY+lblOff); ctx.textAlign='left';
+
+    // ── ANIMATED CARGO POD (transfer arc) ──
+    const podT=(t*.055)%1; // slow loop
+    const pX=midX+(halfMaj*Math.cos(Math.PI+podT*Math.PI*2));
+    const pY=transferY+(H*.3*Math.sin(Math.PI+podT*Math.PI*2));
+    ctx.save(); ctx.translate(pX,pY);
+    ctx.fillStyle='#c8dce8';
+    ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(2,-3); ctx.lineTo(-5,-3); ctx.lineTo(-6,0); ctx.lineTo(-5,3); ctx.lineTo(2,3); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#ffcc40';
+    ctx.beginPath(); ctx.moveTo(-6,-2); ctx.lineTo(-11,-1); ctx.lineTo(-11,1); ctx.lineTo(-6,2); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    // Stage callouts
+    const callouts=[
+      [eCX+leoR*.6, eCY-H*.35,'STAGE 1–2\nRAIL LAUNCH',eCX,eCY-leoR*.9],
+      [W*.5, H*.85,'STAGE 3\nSPACE TUG HANDOFF',midX,H*.68],
+      [mCX-mR*.5, H*.18,'STAGE 4–5\nBLUE MOON + SURFACE',mCX,mCY-mR],
+    ];
+    callouts.forEach(([lx,ly,txt,ax,ay])=>{
+      ctx.strokeStyle='rgba(0,120,200,.3)'; ctx.lineWidth=1; ctx.setLineDash([3,6]);
+      ctx.beginPath(); ctx.moveTo(lx,ly+8); ctx.lineTo(ax,ay); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle='rgba(0,170,255,.65)';
+      ctx.font=`${Math.round(W*.01)}px Share Tech Mono,monospace`;
+      ctx.textAlign='center';
+      txt.split('\n').forEach((line,i)=>ctx.fillText(line,lx,ly+i*14));
+      ctx.textAlign='left';
+    });
+
+    requestAnimationFrame(drawOrbital);
+  }
+  requestAnimationFrame(drawOrbital);
+
+  // ── TUNNEL CROSS-SECTION ──────────────────────────────────────────
+  const tc = document.getElementById('tunnel-canvas');
+  if (!tc) return;
+  const tctx = tc.getContext('2d');
+
+  function resizeTunnel() { tc.width=tc.offsetWidth; tc.height=tc.offsetHeight||280; }
+  resizeTunnel();
+  window.addEventListener('resize', resizeTunnel);
+
+  function drawTunnelXsec(ts) {
+    const W=tc.width, H=tc.height, ctx=tctx, t=ts*.001;
+    ctx.clearRect(0,0,W,H);
+
+    const cx=W*.5, cy=H*.5, R=Math.min(W,H)*.36;
+
+    // Rock fill (outside bore)
+    ctx.fillStyle='#050d1a'; ctx.fillRect(0,0,W,H);
+    // Rock texture (cross-hatch)
+    ctx.strokeStyle='rgba(0,30,60,.35)'; ctx.lineWidth=1;
+    for (let x=0;x<W;x+=18) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y=0;y<H;y+=18) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    // Rock label
+    ctx.fillStyle='rgba(0,60,120,.4)';
+    ctx.font=`${Math.round(W*.018)}px Share Tech Mono,monospace`;
+    ctx.fillText('ROCK / EARTH',W*.04,H*.1);
+
+    // Tunnel bore circle
+    ctx.fillStyle='#000a18';
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+    // Bore ring (concrete lining)
+    ctx.strokeStyle='rgba(40,90,140,.7)'; ctx.lineWidth=R*.08;
+    ctx.beginPath(); ctx.arc(cx,cy,R-.04*R,0,Math.PI*2); ctx.stroke();
+    // Inner bore
+    ctx.strokeStyle='rgba(0,120,200,.25)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(cx,cy,R*.88,0,Math.PI*2); ctx.stroke();
+
+    // Ring segments (structural)
+    for (let a=0;a<Math.PI*2;a+=Math.PI/4) {
+      ctx.strokeStyle='rgba(0,80,140,.5)'; ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.arc(cx,cy,R*.04,0,Math.PI*2); // center
+      ctx.moveTo(cx+Math.cos(a)*R*.88,cy+Math.sin(a)*R*.88);
+      ctx.arc(cx,cy,R*.88,a,a+.01); ctx.stroke();
+    }
+
+    // Superconducting coils (around inner edge)
+    const numCoils=16;
+    for (let i=0;i<numCoils;i++) {
+      const a=i*(Math.PI*2/numCoils);
+      const coilX=cx+Math.cos(a)*R*.76;
+      const coilY=cy+Math.sin(a)*R*.76;
+      const pulse=0.3+0.7*Math.max(0,Math.sin(t*6+i*.5));
+      ctx.fillStyle=`rgba(0,200,255,${pulse*.8})`;
+      ctx.beginPath(); ctx.arc(coilX,coilY,R*.045,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=`rgba(0,230,255,${pulse*.4})`;
+      ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(coilX,coilY,R*.065,0,Math.PI*2); ctx.stroke();
+    }
+
+    // Maglev rails (at bottom of bore, simulating bottom-of-tunnel perspective)
+    const railY=cy+R*.45;
+    const railW=R*.08, railH=R*.12;
+    // Left rail
+    ctx.fillStyle='#1a4060';
+    ctx.fillRect(cx-R*.35-railW*.5,railY-railH,railW,railH);
+    ctx.fillStyle='#2a6090';
+    ctx.fillRect(cx-R*.35-railW*.5,railY-railH*.15,railW,railH*.15);
+    // Right rail
+    ctx.fillRect(cx+R*.35-railW*.5,railY-railH,railW,railH);
+    ctx.fillStyle='#2a6090';
+    ctx.fillRect(cx+R*.35-railW*.5,railY-railH*.15,railW,railH*.15);
+
+    // Cargo pod cross-section (oval)
+    const podW=R*.55, podH=R*.3;
+    const podCY=cy+R*.15;
+    const podGrad=ctx.createRadialGradient(cx-podW*.2,podCY-podH*.2,podH*.05,cx,podCY,podW);
+    podGrad.addColorStop(0,'#ccd8e4');
+    podGrad.addColorStop(0.5,'#8aabcc');
+    podGrad.addColorStop(1,'#3a6080');
+    ctx.fillStyle=podGrad;
+    ctx.beginPath(); ctx.ellipse(cx,podCY,podW,podH,0,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#5090c0'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse(cx,podCY,podW,podH,0,0,Math.PI*2); ctx.stroke();
+    // Cargo markings
+    ctx.fillStyle='rgba(0,15,40,.8)';
+    ctx.beginPath(); ctx.ellipse(cx,podCY,podW*.7,podH*.6,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(0,180,255,.6)';
+    ctx.font=`bold ${Math.round(R*.12)}px Share Tech Mono,monospace`;
+    ctx.textAlign='center';
+    ctx.fillText('CARGO',cx,podCY+R*.04);
+    ctx.textAlign='left';
+
+    // EM glow around pod
+    const glowPulse=0.5+0.5*Math.sin(t*4);
+    const pGlow=ctx.createRadialGradient(cx,podCY,podW*.5,cx,podCY,podW*1.3);
+    pGlow.addColorStop(0,`rgba(0,200,255,${.12*glowPulse})`);
+    pGlow.addColorStop(1,'rgba(0,100,200,0)');
+    ctx.fillStyle=pGlow;
+    ctx.beginPath(); ctx.ellipse(cx,podCY,podW*1.3,podH*1.5,0,0,Math.PI*2); ctx.fill();
+
+    // Dimension callouts
+    ctx.strokeStyle='rgba(0,120,200,.45)'; ctx.lineWidth=1; ctx.setLineDash([3,6]);
+    ctx.beginPath(); ctx.moveTo(cx,cy-R*.92); ctx.lineTo(cx+R*.95,cy-R*.92);
+    ctx.lineTo(cx+R*.95,cy+R*.92); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,160,220,.7)';
+    ctx.font=`${Math.round(W*.018)}px Share Tech Mono,monospace`;
+    ctx.save(); ctx.translate(cx+R*1.05,cy); ctx.rotate(Math.PI/2);
+    ctx.textAlign='center'; ctx.fillText('~10 m BORE DIAMETER',0,0); ctx.textAlign='left';
+    ctx.restore();
+
+    // Labels
+    const lbls=[
+      [cx-R*.76,cy-R*.76,'NbTi COILS'],
+      [cx-R*.55,railY-railH*.5-8,'MAGLEV RAILS'],
+      [cx+R*.55,podCY,'CARGO POD'],
+      [cx+R*.55,cy-R*.4,'10⁻³ ATM VACUUM'],
+    ];
+    lbls.forEach(([x,y,txt])=>{
+      ctx.fillStyle='rgba(0,160,220,.6)';
+      ctx.font=`${Math.round(W*.016)}px Share Tech Mono,monospace`;
+      ctx.fillText(txt,x,y);
+    });
+
+    requestAnimationFrame(drawTunnelXsec);
+  }
+  requestAnimationFrame(drawTunnelXsec);
+
 })();
 </script>
 </body>
