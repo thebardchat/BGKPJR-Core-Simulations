@@ -290,6 +290,17 @@ Project BGKPJR Development Team
 
 ---
 
+## Ecosystem
+
+This repo is part of the `thebardchat` engineering ecosystem. Related:
+
+| Repo | Connection |
+|------|------------|
+| [**artemis**](https://github.com/thebardchat/artemis) | Artemis program showcase — the real-world SLS/Orion hardware that proves ground-to-orbit mass reduction is the engineering frontier BGKPJR is attacking |
+| [**shanebrain-core**](https://github.com/thebardchat/shanebrain-core) | Pi 5 AI backbone powering simulation runs and vector memory |
+
+---
+
 *"We choose to go to the Moon not because it is easy, but because it is hard." - JFK*
 
 *"We choose to launch from a cannon not because it is conventional, but because it is efficient." - Project BGKPJR*
