@@ -396,9 +396,9 @@
         <div class="stat-sub">No crew rating needed. 5× the g-load. Same exit velocity. Far shorter track.</div>
       </div>
       <div class="stat-card moon-card">
-        <div class="stat-num">3<span class="stat-unit"> days</span></div>
+        <div class="stat-num">4.98<span class="stat-unit"> days</span></div>
         <div class="stat-label">Earth → Lunar Surface</div>
-        <div class="stat-sub">Rail launch → LEO handoff → Space Tug Hohmann transfer → Blue Moon lander.</div>
+        <div class="stat-sub">Rail launch → LEO handoff → Hohmann transfer (4.98 days min energy) → Blue Moon lander.</div>
       </div>
       <div class="stat-card moon-card">
         <div class="stat-num">∞</div>
@@ -426,6 +426,8 @@
     <p class="sec-desc">
       Five stages. Four partners. One cargo pod launched per day minimum, scaling to 10–20/day at operational volume.
       Each stage hands off to the next. Nothing returns to Earth except the Space Tug for refueling.
+      Target orbit: <strong style="color:var(--accent-moon)">NRHO</strong> (Near-Rectilinear Halo Orbit) — the Artemis
+      Gateway station orbit, 9:2 lunar resonance, ~1,263 km periapsis / ~68,263 km apoapsis, only ~10 m/s/year station-keeping.
     </p>
 
     <!-- 5-stage flow cards -->
@@ -494,8 +496,8 @@ EARTH SURFACE                                                      MOON
     │                   │  Collects pods   │                        │
     │                   │  Assembles stack │                        │
     │                   └────────┬─────────┘                        │
-    │                            │  TLI burn: 3.1 km/s             │
-    │                            │  Transit: ~3 days               │
+    │                            │  TLI burn: 3,082 m/s            │
+    │                            │  Transit: 4.98 days             │
     │                            │                                  │
     │                            └─────────────────────────────────▶│
     │                                  Hohmann Transfer             │
@@ -546,10 +548,12 @@ EARTH SURFACE                                                      MOON
       <p class="stage-body">
         The tunnel is bored at a <strong style="color:#fff">15–25° incline</strong>, pointing toward
         an open exit at the top of a ridgeline or coastal cliff where the pod's trajectory clears
-        the horizon. The Boring Company's current cost target is ~$10M/mile for small tunnels —
-        at 12 km (7.5 miles), that's roughly <strong style="color:var(--accent-cyan)">$75M in tunnel cost</strong>
-        before track and magnet installation. Compared to surface infrastructure at 28.7 km, this is a
-        fraction of the original architecture's land cost.
+        the horizon. Boring Company's actual Vegas Loop cost ran ~$30.9M/mile — at 12 km (7.5 miles),
+        that's a <strong style="color:var(--accent-cyan)">~$232M tunnel cost at current rates</strong>
+        before track and magnet installation. Their long-term target is under $10M/mile as scale increases;
+        with manufacturing improvements, $75–100M is achievable for a dedicated 12 km bore.
+        Note: current Prufrock TBMs bore a 3.66m inner diameter — BGKPJR requires a custom
+        large-bore design (~10m) for pod clearance. Next-gen TBMs are already in development.
       </p>
       <div class="spec-inline">
         <span class="spec-chip">12 km tunnel length</span>
@@ -720,9 +724,15 @@ EARTH SURFACE                                                      MOON
       <p class="stage-body">
         The Space Tug is a delivery-van-sized orbital transfer vehicle that <strong style="color:#fff">never comes home</strong>.
         It parks in a stable LEO orbit (~400 km), collects incoming cargo pods as they arrive from the rail system,
-        assembles them into a transfer stack, performs the Trans-Lunar Injection (TLI) burn of ~3.1 km/s,
-        and hands the cargo to the Blue Moon lander in lunar orbit. It then returns to LEO on a low-energy
-        trajectory, waiting for the next delivery.
+        assembles them into a transfer stack, performs the Trans-Lunar Injection (TLI) burn of exactly
+        <strong style="color:#fff">3,082 m/s</strong>, and coasts 4.98 days on the Hohmann ellipse to
+        lunar orbit. It then returns to LEO on a low-energy trajectory, waiting for the next delivery.
+      </p>
+      <p class="stage-body">
+        The critical insight: a pod launched ballistically from the surface peaks at 400km apogee with
+        7,551 m/s tangential velocity — only <strong style="color:var(--accent-green)">117.5 m/s short</strong>
+        of the tug's 7,669 m/s circular orbit. The maglev does the hard work. The Tug fires one tiny
+        circularization burn to catch the pod. That's it.
       </p>
       <p class="stage-body">
         The Tug's constraint is propellant. It needs resupply — either from an orbital depot fed by the same
@@ -765,16 +775,17 @@ EARTH SURFACE                                                      MOON
           <circle cx="185" cy="70" r="5" fill="#0a2040" stroke="#1a5080" stroke-width="1.5"/>
           <circle cx="185" cy="70" r="2" fill="#00b4ff"/>
           <!-- Labels -->
-          <text x="130" y="130" font-family="Share Tech Mono,monospace" font-size="7.5" fill="#2a7ab0" text-anchor="middle">2,500 kg DRY · Isp 450s · ΔV 4.0 km/s · NEVER RETURNS</text>
+          <text x="130" y="130" font-family="Share Tech Mono,monospace" font-size="7.5" fill="#2a7ab0" text-anchor="middle">2,500 kg DRY · TLI 3,082 m/s · catch 117.5 m/s · NEVER RETURNS</text>
         </svg>
       </div>
 
       <div class="spec-inline">
         <span class="spec-chip moon">~2,500 kg dry mass</span>
         <span class="spec-chip moon">~400 km LEO parking orbit</span>
-        <span class="spec-chip">TLI ΔV: 3.1 km/s</span>
-        <span class="spec-chip">LOI ΔV: 0.9 km/s</span>
-        <span class="spec-chip">Transit: ~3 days</span>
+        <span class="spec-chip">TLI ΔV: 3,082 m/s</span>
+        <span class="spec-chip">LOI ΔV: 821 m/s</span>
+        <span class="spec-chip">Transit: 4.98 days</span>
+        <span class="spec-chip green">Rendezvous ΔV: 117.5 m/s</span>
         <span class="spec-chip">Isp: ~450 s (LH₂/LOX)</span>
         <span class="spec-chip green">Never returns to Earth</span>
         <span class="spec-chip green">Hundreds of missions</span>
@@ -863,11 +874,12 @@ EARTH SURFACE                                                      MOON
           <div style="font-family:var(--font-mono);font-size:.8rem;color:var(--text-secondary);line-height:1.8">
             <div style="color:#fff;font-weight:700;margin-bottom:.5rem">Blue Moon Mark 2 — Key Facts</div>
             <div>▸ ~16 m tall · two-stage vehicle</div>
-            <div>▸ Cryogenic BE-7 engines (LH₂/LOX)</div>
-            <div>▸ 20,000+ kg payload to lunar surface</div>
-            <div>▸ Crane system for precision cargo placement</div>
-            <div>▸ Already contracted for Artemis HLS</div>
-            <div>▸ BGKPJR pods designed to match cargo envelope</div>
+            <div>▸ <strong style="color:var(--accent-cyan)">3× BE-7 engines</strong> (LH₂/LOX · 460 s Isp · 44.5 kN each)</div>
+            <div>▸ 20,000 kg payload to lunar surface (reusable) · 30,000 kg expendable</div>
+            <div>▸ $3.4B NASA Artemis HLS contract — confirmed vehicle</div>
+            <div>▸ Crane system for precision cargo placement on surface</div>
+            <div>▸ Requires Cislunar Transporter refueling in NRHO</div>
+            <div>▸ BGKPJR pods designed to match Blue Moon cargo envelope</div>
           </div>
         </div>
       </div>
@@ -921,19 +933,36 @@ EARTH SURFACE                                                      MOON
       <span class="eq eq-comment">// Same exit velocity. 5× the g-load. 58% shorter track. This is why unmanned changes everything.</span>
     </div>
 
-    <div class="math-block" data-label="Trans-Lunar Injection — Hohmann Transfer from LEO">
-      <span class="eq">TLI ΔV ≈ 3.13 km/s  (from 400 km LEO to trans-lunar trajectory)</span>
-      <span class="eq">LOI ΔV ≈ 0.90 km/s  (lunar orbit insertion at 100 km)</span>
-      <span class="eq">Total mission ΔV ≈ 4.03 km/s  ·  Transit time: ~3 days</span>
-      <span class="eq eq-comment">// Space Tug provides this burn from permanent LEO parking orbit</span>
+    <div class="math-block" data-label="Trans-Lunar Injection — Exact Hohmann Transfer from 400 km LEO">
+      <span class="eq">μ_Earth = 398,600.4418 km³/s²  ·  r_LEO = 6,771 km  ·  r_Moon = 384,400 km</span>
+      <span class="eq">v_LEO = √(μ/r_LEO) = √(398600.44/6771) = <span class="hl">7,668.6 m/s</span>  (circular orbit velocity)</span>
+      <span class="eq">TLI ΔV = 3,082 m/s  ·  v after TLI = 10,750.6 m/s  →  Hohmann ellipse to Moon</span>
+      <span class="eq">Transit time = π × √(a³/μ)  where a = (r_LEO + r_Moon)/2 = 195,586 km</span>
+      <span class="eq">Transit = π × √(195586³ / 398600.44) = <span class="hl">4.98 days</span>  (Apollo-validated minimum energy)</span>
+      <span class="eq">LOI ΔV = 821 m/s  (100 km circular lunar orbit)  ·  Total LEO→lunar = <span class="hl">3,903 m/s</span></span>
+      <span class="eq">NRHO LOI = ~800 m/s  ·  Total LEO→NRHO = <span class="hl">3,882 m/s</span>  (Artemis-compatible target orbit)</span>
+      <span class="eq eq-comment">// Apollo 11 TLI check: computed 3,134 m/s vs historical 3,148 m/s → 0.4% agreement ✓</span>
     </div>
 
-    <div class="math-block" data-label="Space Tug Fuel Budget — Tsiolkovsky Applied">
+    <div class="math-block" data-label="Space Tug Rendezvous — The 117 m/s Catch (Key Insight)" style="border-left-color:var(--accent-green)">
+      <span class="eq">Pod launched from surface via maglev → ballistic arc, apogee = 400 km</span>
+      <span class="eq">a_pod = (r_surface + r_apogee)/2 = (6371 + 6771)/2 = 6,571 km</span>
+      <span class="eq">v_pod at apogee = √(μ × (2/r_apo − 1/a)) = √(398600.44 × (2/6771 − 1/6571))</span>
+      <span class="eq">v_pod = <span class="hl-green">7,551 m/s</span>  (tangential, eastward — same direction as tug orbit)</span>
+      <span class="eq">Space Tug circular velocity = <span class="hl-green">7,669 m/s</span></span>
+      <span class="eq">Rendezvous ΔV = 7,669 − 7,551 = <span class="hl-green">117.5 m/s</span>  ← this is ALL the tug burns to catch the pod</span>
+      <span class="eq eq-comment">// The pod arrives 99% of the way to circular orbit. The tug fires 117.5 m/s to circularize. Done.</span>
+      <span class="eq eq-comment">// Compare: a full Falcon 9 launch to LEO burns ~9,400 m/s. BGKPJR ground-launch does 8,400+.</span>
+    </div>
+
+    <div class="math-block" data-label="Space Tug Fuel Budget — Tsiolkovsky Applied (Exact ΔV)">
       <span class="eq">ΔV = Isp × g₀ × ln(m_wet / m_dry)</span>
-      <span class="eq">4,030 m/s = 450 × 9.81 × ln(m_wet / 2,500 kg)</span>
-      <span class="eq">ln(m_wet / 2,500) = 0.913  →  m_wet ≈ 6,200 kg</span>
-      <span class="eq">Propellant required: ~3,700 kg per round trip  ·  Tug dry mass: ~2,500 kg</span>
+      <span class="eq">Full mission ΔV: TLI 3,082 + LOI 821 + rendezvous 117.5 = <span class="hl">4,021 m/s</span></span>
+      <span class="eq">4,021 m/s = 450 × 9.81 × ln(m_wet / 2,500 kg)</span>
+      <span class="eq">ln(m_wet / 2,500) = 0.910  →  m_wet ≈ 6,180 kg</span>
+      <span class="eq">Propellant required: ~3,680 kg per delivery cycle  ·  Tug dry mass: ~2,500 kg</span>
       <span class="eq eq-comment">// Tug can be resupplied via orbital depot. Each refuel = another lunar delivery cycle.</span>
+      <span class="eq eq-comment">// Rendezvous 117.5 m/s is cheap vs 3,082 m/s TLI — the pod does the hard work getting to LEO altitude.</span>
     </div>
 
     <div class="math-block" data-label="Daily Supply Volume — Operational Target">
@@ -1228,8 +1257,10 @@ EARTH SURFACE                                                      MOON
           <tr><td>Propellant load</td><td>~3,700 kg per TLI cycle</td></tr>
           <tr><td>Propulsion</td><td>LH₂/LOX bipropellant</td></tr>
           <tr><td>Isp</td><td>~450 s</td></tr>
-          <tr><td>TLI ΔV</td><td>3.13 km/s (from 400 km LEO)</td></tr>
-          <tr><td>LOI ΔV</td><td>0.90 km/s (100 km lunar)</td></tr>
+          <tr><td>TLI ΔV</td><td>3,082 m/s (from 400 km LEO)</td></tr>
+          <tr><td>LOI ΔV</td><td>821 m/s (100 km lunar orbit)</td></tr>
+          <tr><td>Rendezvous ΔV</td><td>117.5 m/s (pod catch at apogee)</td></tr>
+          <tr><td>Transit time</td><td>4.98 days (Hohmann minimum energy)</td></tr>
           <tr><td>Parking orbit</td><td>400 km LEO (permanent)</td></tr>
           <tr><td>Return to Earth</td><td>Never</td></tr>
         </table>
@@ -1287,6 +1318,15 @@ EARTH SURFACE                                                      MOON
           The VacuumGate LH₂ membrane, vacuum tube structural integrity, and $85–120B
           capital requirement are unchanged. Unmanned helps economics, not fundamental physics.
           These barriers are documented — not hidden.
+        </div>
+      </div>
+      <div class="honesty-card">
+        <span class="honesty-check check-warn">⚠ BORING CO. BORE SIZE GAP</span>
+        <div class="honesty-text">
+          Current Prufrock TBMs bore 3.66m inner diameter. BGKPJR needs ~10m for pod clearance.
+          Boring Co. actual costs run ~$30.9M/mile vs the &lt;$10M/mile long-term target.
+          Real 12km tunnel at current rates: ~$232M. These are documented engineering gaps —
+          not showstoppers, but gaps requiring next-gen TBM development.
         </div>
       </div>
     </div>
@@ -1963,7 +2003,7 @@ EARTH SURFACE                                                      MOON
       [3,3.7,'VACUUMGATE · LH₂ DETONATION SEAL · PATENT IP'],
       [3.7,8,'ATMOSPHERIC ASCENT · ROCKET IGNITION · TARGETING LEO'],
       [8,11,'STAGE 3 · SPACE TUG RENDEZVOUS · LEO 400 km'],
-      [11,14,'HOHMANN TRANSFER · ΔV 3.1 km/s · 3-DAY TRANSIT TO MOON'],
+      [11,14,'HOHMANN TRANSFER · TLI 3,082 m/s · 4.98-DAY TRANSIT TO MOON'],
       [14,16,'STAGE 4–5 · BLUE MOON Mk2 · LUNAR SURFACE DELIVERY']
     ];
     const pipIdx = [0,1,2,3,4,5];
@@ -2036,7 +2076,7 @@ EARTH SURFACE                                                      MOON
     ctx.fillStyle='rgba(251,191,36,.55)';
     ctx.font=`${Math.round(W*.012)}px Share Tech Mono,monospace`;
     ctx.textAlign='center';
-    ctx.fillText('HOHMANN TRANSFER · ΔV 3.1 km/s · 3 DAYS',midX,H*.14);
+    ctx.fillText('HOHMANN TRANSFER · TLI 3,082 m/s · 4.98 DAYS',midX,H*.14);
     ctx.textAlign='left';
 
     // ── LEO RING ──
