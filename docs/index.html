@@ -267,13 +267,22 @@
     .footer-const a{color:var(--text-muted);text-decoration:none}
     .footer-const a:hover{color:var(--accent-blue)}
 
-    /* BOTTOM BAR */
-    .ref-bottom{position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(90deg,#030e1e,#061528,#030e1e);border-top:1px solid rgba(0,100,180,.5);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em}
-    .ref-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-amber);box-shadow:0 0 8px var(--accent-amber);animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0}
+    /* TELEMETRY TICKER BAR */
+    .ref-bottom{position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(90deg,#020a18,#041020,#020a18);border-top:1px solid rgba(0,100,180,.4);height:34px;overflow:hidden;display:flex;align-items:center}
+    .telem-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-amber);box-shadow:0 0 6px var(--accent-amber);animation:pulse-dot 2s ease-in-out infinite;flex-shrink:0;margin:0 .8rem 0 1rem}
     @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.7)}}
-    .ref-text{color:var(--text-muted)}
-    .ref-link{color:var(--accent-cyan);text-decoration:none;font-weight:700}
-    .ref-link:hover{text-decoration:underline}
+    .telem-track{display:inline-flex;align-items:center;white-space:nowrap;animation:telem-scroll 100s linear infinite;height:34px}
+    .telem-track:hover{animation-play-state:paused}
+    @keyframes telem-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .telem-item{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;color:var(--text-muted);padding:0 2rem;border-left:1px solid rgba(0,80,160,.25)}
+    .telem-item .tl{color:var(--accent-cyan)}
+    .telem-item .tg{color:var(--accent-gold)}
+    .telem-item .tm{color:var(--accent-moon)}
+    .telem-item .tv{color:var(--accent-green)}
+
+    /* SCROLL REVEALS */
+    .section{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+    .section.visible{opacity:1;transform:translateY(0)}
 
     .section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-blue),transparent);margin:0 1.5rem}
     .hl{color:var(--accent-cyan);font-weight:700}
@@ -1031,6 +1040,36 @@ EARTH SURFACE                                                      MOON
         </div>
       </div>
     </div>
+
+    <div style="margin-top:2rem">
+      <div class="sec-label" style="margin-bottom:1.25rem">Related Projects · The Ecosystem</div>
+      <div class="partner-grid">
+        <div class="partner-card" style="border-color:var(--border-moon)">
+          <div class="partner-name" style="color:var(--accent-moon)">Artemis Program Showcase</div>
+          <div class="partner-role" style="color:var(--accent-moon)">Destination · NASA Human Lunar Program</div>
+          <div class="partner-desc">
+            The crewed lunar infrastructure that BGKPJR is designed to supply. Artemis II splashed down
+            April 10, 2026 — the first humans around the Moon since Apollo 17. Artemis IV will land the
+            first woman and first person of color. BGKPJR builds the supply chain for what comes after.
+          </div>
+          <div style="margin-top:1rem">
+            <a href="https://thebardchat.github.io/artemis/" target="_blank" rel="noopener" class="btn btn-moon" style="font-size:.65rem;padding:.5rem 1.2rem">View Artemis Showcase →</a>
+          </div>
+        </div>
+        <div class="partner-card" style="border-color:rgba(34,197,94,.35)">
+          <div class="partner-name" style="color:var(--accent-green)">Manna Cargo Pods</div>
+          <div class="partner-role" style="color:var(--accent-green)">Payload · EM-Launched Uncrewed Cargo System</div>
+          <div class="partner-desc">
+            Three-variant cargo pod family engineered for EM rail launch. Manna-H (100g bulk cargo),
+            Manna-I (5.5g instruments), Manna-B (2.5g biological). Built to ride the BGKPJR rail.
+            Blueprint technical reference with RK4 trajectory simulation and internal cross-section drawings.
+          </div>
+          <div style="margin-top:1rem">
+            <a href="https://thebardchat.github.io/manna/" target="_blank" rel="noopener" class="btn" style="font-size:.65rem;padding:.5rem 1.2rem;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.35);color:var(--accent-green)">View Manna Blueprints →</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1567,9 +1606,10 @@ EARTH SURFACE                                                      MOON
     </a>
     <div class="footer-divider"></div>
     <div class="footer-const">
-      Part of the <a href="https://angel-cloud-hub.pages.dev">Angel Cloud ecosystem</a>
+      Ecosystem: <a href="https://thebardchat.github.io/artemis/">Artemis Program Showcase</a>
+      · <a href="https://thebardchat.github.io/manna/">Manna Cargo Pods</a>
       · <a href="https://github.com/thebardchat">thebardchat</a>
-      · Pi before cloud · Privacy before convenience
+      · Built in Hazel Green, AL
     </div>
     <div style="margin-top:1.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--accent-amber);opacity:.8;">
       ★ Try Claude free for 2 weeks —
@@ -1581,12 +1621,31 @@ EARTH SURFACE                                                      MOON
 
 </div>
 
-<!-- FIXED BOTTOM BAR -->
+<!-- TELEMETRY TICKER -->
 <div class="ref-bottom">
-  <div class="ref-dot"></div>
-  <span class="ref-text">Try Claude free for 2 weeks —</span>
-  <a href="https://claude.ai/referral/4fAMYN9Ing" target="_blank" rel="noopener" class="ref-link">Start your free trial →</a>
-  <span class="ref-text">· AI behind this ecosystem</span>
+  <div class="telem-dot"></div>
+  <div class="telem-track">
+    <span class="telem-item">BGKPJR <span class="tg">★ PATENT FILED</span> · Electromagnetic Rail Launch · Earth → Moon Supply Pipeline</span>
+    <span class="telem-item">RAIL LENGTH <span class="tl">12 km unmanned</span> · 20g acceleration · NbTi superconducting maglev</span>
+    <span class="telem-item">FREE ΔV <span class="tl">1,200–1,700 m/s</span> · before any propellant burn · Boring Co. underground tunnel</span>
+    <span class="telem-item">TRANSIT TIME <span class="tm">4.98 days</span> · Earth surface → lunar surface · Hohmann transfer + Blue Moon Mk2</span>
+    <span class="telem-item">COST TARGET <span class="tv">$200/kg to Moon</span> · vs $2,000/kg+ rocket-per-delivery baseline</span>
+    <span class="telem-item">PHASE 0 <span class="tg">IN PROGRESS · 2026</span> · Physics validation · Python RK4 sims · VacuumGate feasibility published</span>
+    <span class="telem-item">VACUUMGATE <span class="tg">PATENT IP</span> · LH₂ cryogenic exit membrane · patent-filed atmospheric seal</span>
+    <span class="telem-item">ARTEMIS CONNECTION <span class="tm">Artemis II splashdown April 10 2026</span> · BGKPJR feeds the post-Artemis lunar colony supply chain</span>
+    <span class="telem-item">MANNA PODS <span class="tl">EM cargo variants</span> · Manna-H / Manna-I / Manna-B · designed for BGKPJR rail launch</span>
+    <span class="telem-item">BUILT BY <span class="tg">Shane Brazelton + Claude Anthropic</span> · Hazel Green, AL · claude.ai/referral/4fAMYN9Ing</span>
+    <span class="telem-item">BGKPJR <span class="tg">★ PATENT FILED</span> · Electromagnetic Rail Launch · Earth → Moon Supply Pipeline</span>
+    <span class="telem-item">RAIL LENGTH <span class="tl">12 km unmanned</span> · 20g acceleration · NbTi superconducting maglev</span>
+    <span class="telem-item">FREE ΔV <span class="tl">1,200–1,700 m/s</span> · before any propellant burn · Boring Co. underground tunnel</span>
+    <span class="telem-item">TRANSIT TIME <span class="tm">4.98 days</span> · Earth surface → lunar surface · Hohmann transfer + Blue Moon Mk2</span>
+    <span class="telem-item">COST TARGET <span class="tv">$200/kg to Moon</span> · vs $2,000/kg+ rocket-per-delivery baseline</span>
+    <span class="telem-item">PHASE 0 <span class="tg">IN PROGRESS · 2026</span> · Physics validation · Python RK4 sims · VacuumGate feasibility published</span>
+    <span class="telem-item">VACUUMGATE <span class="tg">PATENT IP</span> · LH₂ cryogenic exit membrane · patent-filed atmospheric seal</span>
+    <span class="telem-item">ARTEMIS CONNECTION <span class="tm">Artemis II splashdown April 10 2026</span> · BGKPJR feeds the post-Artemis lunar colony supply chain</span>
+    <span class="telem-item">MANNA PODS <span class="tl">EM cargo variants</span> · Manna-H / Manna-I / Manna-B · designed for BGKPJR rail launch</span>
+    <span class="telem-item">BUILT BY <span class="tg">Shane Brazelton + Claude Anthropic</span> · Hazel Green, AL · claude.ai/referral/4fAMYN9Ing</span>
+  </div>
 </div>
 
 <!-- CANVAS -->
@@ -2522,6 +2581,16 @@ EARTH SURFACE                                                      MOON
   }
   requestAnimationFrame(drawTunnelXsec);
 
+})();
+
+// Scroll reveals
+(function(){
+  const io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.06,rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.section').forEach(function(el){io.observe(el);});
 })();
 </script>
 </body>
