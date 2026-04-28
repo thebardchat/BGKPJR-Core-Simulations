@@ -297,6 +297,7 @@ This repo is part of the `thebardchat` engineering ecosystem. Related:
 | Repo | Connection |
 |------|------------|
 | [**artemis**](https://github.com/thebardchat/artemis) | Artemis program showcase — the real-world SLS/Orion hardware that proves ground-to-orbit mass reduction is the engineering frontier BGKPJR is attacking |
+| [**manna**](https://github.com/thebardchat/manna) | MANNA supply pod — *Modular Aerospace Necessities & Nutrient Asset*, the resupply capsule we literally shoot into space inside Gryphon's payload bay ([spec](docs/system_specs/manna_specs.md)) |
 | [**shanebrain-core**](https://github.com/thebardchat/shanebrain-core) | Pi 5 AI backbone powering simulation runs and vector memory |
 
 ---
