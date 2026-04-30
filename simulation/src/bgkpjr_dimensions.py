@@ -116,14 +116,191 @@ class RAIL:
     CHARGE_RATE_MW = 650.0       # PROVISIONAL
     CHARGE_TIME_MIN = 15.0       # PROVISIONAL (revised from 4 min for 580 GJ)
 
-    # ── Muzzle interface — VacuumGate's novel IP: LH₂ membrane ────────
-    MUZZLE_SEAL_TYPE = "Liquid Hydrogen (LH₂) cryogenic membrane"  # VG
-    MUZZLE_LH2_TEMP_K = 20.0                # VG
-    MUZZLE_STAGNATION_PRESSURE_MPA = 1.77   # VG    at Mach 5 sea-level
-    MUZZLE_CONTROLLED_DETONATION = True     # VG    intended thrust-boost
+    # ── Muzzle interface — TWO ALTERNATIVE ARCHITECTURES ─────────────
+    # Per 2026-04-30 architectural decision: thermite and LH₂ membranes
+    # are documented as two parallel alternatives, not one superseding the
+    # other. Trade study to be performed (Phase 0).
+    MUZZLE_STAGNATION_PRESSURE_MPA = 1.77   # VG  at Mach 5 sea-level
+    MUZZLE_ALTERNATIVES = {
+        "lh2": {
+            "name": "Liquid Hydrogen (LH₂) Cryogenic Membrane",
+            "membrane_temp_k": 20.0,        # VG  -253 °C
+            "novel_ip": True,               # VG  controlled detonation = thrust boost
+            "thrust_boost_dv_ms": 50.0,     # VG  estimated Δv from controlled detonation
+            "reset_time_min": 30.0,         # LH₂ refill cycle
+            "advantages": [
+                "Novel patent-worthy IP (controlled detonation as thrust impulse)",
+                "Acts as cryogenic heat sink during transit",
+                "Aligns with VG vehicle LH₂ propellant supply",
+            ],
+            "disadvantages": [
+                "Requires cryogenic infrastructure at muzzle (per launch)",
+                "Detonation control is the central engineering risk",
+                "Hindenburg-mode failure if detonation goes uncontrolled",
+            ],
+        },
+        "thermite": {
+            "name": "Thermite (Al/Fe₂O₃) Three-Layer Membrane",
+            "ignition_velocity_ms": 1700.0,  # WC tip contact ignition
+            "ignition_time_us": 50.0,        # microsecond combustion
+            "peak_temperature_c": 2000.0,    # Al/Fe₂O₃ flame temp
+            "novel_ip": False,               # known reaction, novel application
+            "reset_time_min": 8.0,           # membrane swap cycle
+            "advantages": [
+                "Self-consuming: zero solid debris field after vehicle passes",
+                "Faster reset between launches (~8 min vs 30 min for LH₂)",
+                "No cryogenic infrastructure required at muzzle",
+            ],
+            "disadvantages": [
+                "No thrust-impulse benefit (detonation contained, not directed)",
+                "Pyrotechnic consumable cost per launch (~$2,400/seal)",
+                "Plasma aperture flash exposes vehicle nose to 2,000 °C for 50 μs",
+            ],
+        },
+    }
+    # Canonical default (used by visualizations and primary mission profile)
+    MUZZLE_DEFAULT = "lh2"
+    MUZZLE_SEAL_TYPE = MUZZLE_ALTERNATIVES[MUZZLE_DEFAULT]["name"]
+    MUZZLE_LH2_TEMP_K = MUZZLE_ALTERNATIVES["lh2"]["membrane_temp_k"]
+    MUZZLE_CONTROLLED_DETONATION = True
 
 # ═══════════════════════════════════════════════════════════════════════
-#  STAGE 2 — GRYPHON: Hypersonic waverider with variable-geometry wings
+#  PROGRAM PHASING — 2026-04-30 architectural decision
+# ═══════════════════════════════════════════════════════════════════════
+#
+#  Two parallel programs share the same 37 km LSM rail infrastructure:
+#
+#    Phase 1 (CURRENT, 2026-2033)   : MANNA cargo pods + Space Tug
+#                                      Unmanned resupply pipeline to Moon.
+#                                      "Manhattan timeline" — operational
+#                                      cargo by 2033-2035.
+#    Phase 2 (DEFERRED)             : GRYPHON crewed vehicle
+#                                      Hypersonic waverider, 4 crew + 10 t.
+#                                      Same rail; deferred until pod
+#                                      pipeline is proven and Artemis crew
+#                                      missions establish lunar presence.
+#
+#  In the Space Pipeline architecture:
+#    Earth surface → [BGKPJR rail] → LEO (cargo pods)
+#                                      ↓
+#                                   [Space Tug]
+#                                      ↓
+#                                  Lunar orbit
+#                                      ↓
+#                                [Blue Moon Mk2 lander or SpaceX HLS]
+#                                      ↓
+#                                Lunar surface
+#                                      ↓
+#                       [Empty pods → regolith-filled "Space LEGO"
+#                        radiation-proof base structures]
+#
+# ═══════════════════════════════════════════════════════════════════════
+
+class PROGRAM_PHASE:
+    CURRENT = "Phase 1 — Manna Cargo Pipeline"
+    PHASES = {
+        "phase_0": {"name": "Concept Maturation & Subscale Demonstrator",
+                    "years": "2026-2028",
+                    "status": "ACTIVE — concept paper, NIAC submission, dimensional reconciliation"},
+        "phase_1": {"name": "Manna Cargo Pipeline (unmanned)",
+                    "years": "2029-2033",
+                    "status": "PRIMARY OBJECTIVE",
+                    "description": "37 km rail operational; cargo pods to LEO; Tug to lunar orbit; lander handoff"},
+        "phase_2": {"name": "Gryphon Crewed (deferred)",
+                    "years": "2034+",
+                    "status": "DEFERRED",
+                    "description": "Same rail; hypersonic crewed vehicle; pending pod pipeline maturity"},
+    }
+
+# ═══════════════════════════════════════════════════════════════════════
+#  STAGE 2A — MANNA POD: Unmanned cargo pod (CURRENT PRIMARY VEHICLE)
+# ═══════════════════════════════════════════════════════════════════════
+
+class MANNA_POD:
+    """
+    Canonical Manna pod: passive ballistic cargo unit launched on the 37 km
+    rail to LEO, captured by a Space Tug for translunar transfer.
+
+    Pod variants (H/I/B/F/M/X/T) all share these chassis dimensions and
+    the canonical 4 G rail acceleration; they differ in cargo class,
+    internal cushioning (effective internal G), and recovery mode.
+    """
+    # Chassis (common to all variants)
+    DIAMETER_M = 1.8                # bore-clearance (tube ID = 10 m)
+    LENGTH_M_NOMINAL = 4.5          # mean of variants
+    DRY_MASS_KG_NOMINAL = 800.0     # PROVISIONAL  pending Lukens
+    PAYLOAD_FRACTION_NOMINAL = 0.65 # PROVISIONAL  variant-dependent
+
+    # Mass class (canonical at canonical rail v=1700 m/s, 4G internal)
+    GROSS_MASS_KG_NOMINAL = 4000.0  # PROVISIONAL
+    PAYLOAD_KG_NOMINAL = 2600.0     # PROVISIONAL  cargo
+
+    # Mission profile
+    EXIT_VELOCITY_MS = 1700.0       # = RAIL.EXIT_VELOCITY_MS (canonical)
+    EXIT_MACH = 5.0
+    INTERNAL_G_DEFAULT = 4.0        # rail G; can be cushioned to lower
+    SECOND_STAGE_DV_MS = 7700.0     # rocket boost from Mach 5 to LEO
+
+    # End-of-life — pods become regolith-filled "Space LEGO" structures
+    REPURPOSE_AS_REGOLITH_FILL = True  # NASA / lunar base structural use
+
+# ═══════════════════════════════════════════════════════════════════════
+#  STAGE 2B — SPACE TUG: Reusable LEO-to-Moon transfer vehicle
+# ═══════════════════════════════════════════════════════════════════════
+
+class SPACE_TUG:
+    """
+    Permanent in-space cargo tug. Captures Manna pods in LEO, performs
+    trans-lunar injection, releases pods in lunar orbit for capture by
+    a lander (Blue Moon Mk2, SpaceX HLS, or equivalent). Refuels in LEO
+    or lunar orbit (eventually from Manna-F propellant pods carrying
+    LH₂/LOX or ISRU water from lunar surface).
+
+    Size class: "size of a delivery van — never lands, never fights
+    Earth's gravity. Engine + hitch. Fuel is the limit, not size."
+    """
+    # Size class (PROVISIONAL pending Phase 0 design study)
+    DRY_MASS_KG = 5000.0            # PROVISIONAL  ~delivery-van scale
+    PROPELLANT_CAPACITY_KG = 25000.0
+    LENGTH_M_NOMINAL = 6.0
+    DIAMETER_M_NOMINAL = 3.0
+
+    # Performance
+    DELTA_V_PER_REFUEL_MS = 4500.0  # full-tank Δv budget
+    LEO_TO_LUNAR_DV_REQUIRED = 4100.0  # m/s LEO → low-lunar orbit
+    ROUNDTRIP_DV_REQUIRED = 4500.0  # one-way + return-empty + station-keep
+
+    # Architecture
+    PROPELLANT_TYPE = "LH₂ / LOX (ISRU compatible)"
+    REFUELING_INTERFACE = "Manna-F propellant pod compatible"
+    LIFETIME_CYCLES = 50            # PROVISIONAL  refurbish cadence
+
+# ═══════════════════════════════════════════════════════════════════════
+#  THE MANHATTAN TIMELINE — 7-9 year operational cargo pipeline
+# ═══════════════════════════════════════════════════════════════════════
+
+class TIMELINE:
+    """
+    The 'Manhattan Project' timeline (Shane's framing): assuming 2026 start,
+    operational cargo pipeline in 7-9 years (i.e., 2033-2035).
+
+    Parallel to Artemis crew launches at 10-month cadence using SpaceX HLS
+    or Blue Moon Mk2 landers. BGKPJR pods feed those landers with cargo,
+    propellant (Manna-F), and ISRU feedstock.
+
+    Current push: lunar base operational in 3 years (~2029).
+    """
+    PROGRAM_START_YEAR = 2026
+    OPERATIONAL_CARGO_YEAR_LOW = 2033      # 7-year aggressive
+    OPERATIONAL_CARGO_YEAR_HIGH = 2035     # 9-year nominal
+    LUNAR_BASE_TARGET_YEAR = 2029          # 3-year aggressive (NASA-led)
+    ARTEMIS_CADENCE_MONTHS = 10            # crew launches every 10 mo
+    BGKPJR_CARGO_CADENCE_TARGET_YEAR = 21  # pod launches per year initial
+    BGKPJR_CARGO_CADENCE_TARGET_MATURE = 50  # pod launches per year mature
+
+# ═══════════════════════════════════════════════════════════════════════
+#  STAGE 3 — GRYPHON: Hypersonic waverider with variable-geometry wings
+#  STATUS: DEFERRED (Phase 2). Constants retained for forward-compatibility.
 # ═══════════════════════════════════════════════════════════════════════
 
 class GRYPHON:

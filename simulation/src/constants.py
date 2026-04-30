@@ -24,6 +24,9 @@ import math
 from dataclasses import dataclass
 from typing import Final
 
+# Import canonical SoT (single source of truth)
+from . import bgkpjr_dimensions as _SoT
+
 
 @dataclass(frozen=True)
 class PhysicalConstants:
@@ -66,47 +69,52 @@ class SystemParams:
     These can be modified for parametric studies.
     """
 
-    # Maglev Track Parameters (VacuumGate canonical, 2026-04-30)
-    TRACK_LENGTH: float = 37000.0  # m (37 km, was 28.7 km — VG revision)
-    TRACK_ANGLE_MIN: float = 15.0  # degrees (patent envelope)
-    TRACK_ANGLE_MAX: float = 45.0  # degrees (patent envelope)
-    TRACK_ANGLE_DEFAULT: float = 15.0  # degrees (canonical operating point)
-    TUBE_PRESSURE_RATIO: float = 0.05  # Fraction of atmospheric (patent envelope min)
-    MAX_ACCELERATION_G: float = 4.0  # Maximum allowed g-force (VG sustained)
+    # ── Maglev Track Parameters ──────────────────────────────────────
+    # All values mirror bgkpjr_dimensions.py (the canonical source of truth).
+    TRACK_LENGTH: float = _SoT.RAIL.LENGTH_M
+    TRACK_ANGLE_MIN: float = _SoT.PATENT.INCLINATION_DEG_MIN
+    TRACK_ANGLE_MAX: float = _SoT.PATENT.INCLINATION_DEG_MAX
+    TRACK_ANGLE_DEFAULT: float = _SoT.RAIL.INCLINATION_DEG
+    TUBE_PRESSURE_RATIO: float = _SoT.RAIL.TUBE_PRESSURE_ATM
+    MAX_ACCELERATION_G: float = _SoT.RAIL.PEAK_G
 
-    # Exit Conditions (VacuumGate canonical Mach 5)
-    EXIT_MACH_MIN: float = 3.0  # patent envelope
-    EXIT_MACH_MAX: float = 5.0  # patent envelope
-    EXIT_MACH_DEFAULT: float = 5.0  # was 3.5 — VG revision
+    # ── Exit Conditions ──────────────────────────────────────────────
+    EXIT_MACH_MIN: float = _SoT.PATENT.EXIT_MACH_MIN
+    EXIT_MACH_MAX: float = _SoT.PATENT.EXIT_MACH_MAX
+    EXIT_MACH_DEFAULT: float = _SoT.RAIL.EXIT_MACH
 
-    # Gryphon Spacecraft
-    GRYPHON_MASS_DRY: float = 15000.0  # kg
-    GRYPHON_MASS_PAYLOAD: float = 5000.0  # kg
-    GRYPHON_MASS_PROPELLANT: float = 30000.0  # kg (initial estimate)
-    GRYPHON_WING_AREA: float = 120.0  # m² (deployed)
-    GRYPHON_WING_AREA_RETRACTED: float = 40.0  # m² (during tube transit)
-    GRYPHON_LENGTH: float = 25.0  # m (characteristic length)
-    GRYPHON_CD0: float = 0.015  # Zero-lift drag coefficient (hypersonic)
-    GRYPHON_CL_ALPHA: float = 0.05  # Lift curve slope (per degree)
-    GRYPHON_LD_HYPERSONIC: float = 4.5  # L/D at hypersonic speeds
-    GRYPHON_LD_SUBSONIC: float = 8.0  # L/D for glide return
+    # ── Gryphon Spacecraft (DEFERRED — Phase 2 future project) ─────
+    # Gryphon is deferred per 2026-04-30 architectural decision. Current
+    # critical path is the unmanned cargo pod pipeline (Manna pods + Tug).
+    # Gryphon constants retained for forward-compatibility with the LSM
+    # accelerator (same rail accommodates both vehicles).
+    GRYPHON_MASS_DRY: float = _SoT.GRYPHON.DRY_MASS_KG
+    GRYPHON_MASS_PAYLOAD: float = _SoT.GRYPHON.PAYLOAD_MASS_KG
+    GRYPHON_MASS_PROPELLANT: float = _SoT.GRYPHON.PROPELLANT_MASS_KG
+    GRYPHON_WING_AREA: float = 120.0  # m² (deployed) — retained from original
+    GRYPHON_WING_AREA_RETRACTED: float = 40.0  # m² — retained from original
+    GRYPHON_LENGTH: float = _SoT.GRYPHON.LENGTH_M
+    GRYPHON_CD0: float = _SoT.GRYPHON.CD0_HYPERSONIC
+    GRYPHON_CL_ALPHA: float = _SoT.GRYPHON.CL_ALPHA_PER_DEG
+    GRYPHON_LD_HYPERSONIC: float = _SoT.GRYPHON.LD_HYPERSONIC
+    GRYPHON_LD_SUBSONIC: float = _SoT.GRYPHON.LD_SUBSONIC
 
-    # Kepler Solar Sail
-    KEPLER_AREA: float = 1200.0  # m²
-    KEPLER_MASS: float = 50.0  # kg (sail + deployment mechanism)
-    KEPLER_THICKNESS: float = 2.5e-6  # m (2.5 microns)
-    KEPLER_REFLECTIVITY: float = 0.9  # Reflectivity coefficient
-    SOLAR_CONSTANT: float = 1361.0  # W/m² at 1 AU
+    # ── Kepler Solar Sail ──────────────────────────────────────────
+    KEPLER_AREA: float = _SoT.KEPLER.SAIL_AREA_M2
+    KEPLER_MASS: float = _SoT.KEPLER.SAIL_MASS_KG
+    KEPLER_THICKNESS: float = _SoT.KEPLER.SAIL_THICKNESS_M
+    KEPLER_REFLECTIVITY: float = _SoT.KEPLER.REFLECTIVITY
+    SOLAR_CONSTANT: float = _SoT.SOLAR_CONSTANT_1AU
 
-    # Propulsion
-    ISP_VACUUM: float = 350.0  # s (typical LOX/RP-1)
-    ISP_SEA_LEVEL: float = 310.0  # s
-    THRUST_MAX: float = 500000.0  # N (500 kN)
+    # ── Propulsion ─────────────────────────────────────────────────
+    ISP_VACUUM: float = _SoT.GRYPHON.ISP_VACUUM_S
+    ISP_SEA_LEVEL: float = _SoT.GRYPHON.ISP_SEA_LEVEL_S
+    THRUST_MAX: float = _SoT.GRYPHON.THRUST_MAX_N
 
-    # Mission Targets
-    LEO_ALTITUDE: float = 400000.0  # m (400 km)
-    ORBITAL_VELOCITY_LEO: float = 7670.0  # m/s at 400 km
-    DELTA_V_TO_LEO: float = 9400.0  # m/s (from surface, traditional)
+    # ── Mission Targets ────────────────────────────────────────────
+    LEO_ALTITUDE: float = _SoT.MISSION.LEO_ALTITUDE_KM * 1000
+    ORBITAL_VELOCITY_LEO: float = _SoT.MISSION.LEO_VELOCITY_MS
+    DELTA_V_TO_LEO: float = _SoT.MISSION.DELTA_V_TO_LEO_TOTAL_MS
 
     @property
     def gryphon_mass_initial(self) -> float:
