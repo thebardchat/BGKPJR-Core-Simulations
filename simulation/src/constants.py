@@ -1,11 +1,23 @@
 """
 Physical Constants and System Parameters for BGKPJR Simulations
 
-This module defines all fundamental physical constants and system-specific
+This module defines fundamental physical constants and system-specific
 parameters used throughout the simulation framework.
 
+⚠️  CANONICAL DIMENSIONS NOTICE (2026-04-30)
+   The dimensional constants in this file have been reconciled with the
+   canonical source-of-truth at:
+       simulation/src/bgkpjr_dimensions.py
+   which aligns with the BGKPJR-VacuumGate Feasibility Report v1.0
+   (April 18, 2026). Key changes from prior baseline:
+       TRACK_LENGTH: 28,700 m → 37,000 m
+       EXIT_MACH_DEFAULT: 3.5 → 5.0
+       MAX_ACCELERATION_G: 4.0 (unchanged, now matches kinematics)
+   Run `python -m simulation.src.bgkpjr_dimensions` to verify.
+   See expert-reviews/PRE-LUKENS-AUDIT-2026-04-30.md for full rationale.
+
 Author: Shane Brazelton
-Date: 2025
+Date: 2025 (reconciled 2026-04-30)
 """
 
 import math
@@ -54,18 +66,18 @@ class SystemParams:
     These can be modified for parametric studies.
     """
 
-    # Maglev Track Parameters
-    TRACK_LENGTH: float = 28700.0  # m (28.7 km)
-    TRACK_ANGLE_MIN: float = 15.0  # degrees
-    TRACK_ANGLE_MAX: float = 45.0  # degrees
-    TRACK_ANGLE_DEFAULT: float = 30.0  # degrees
-    TUBE_PRESSURE_RATIO: float = 0.1  # Fraction of atmospheric (0.1 atm)
-    MAX_ACCELERATION_G: float = 4.0  # Maximum allowed g-force
+    # Maglev Track Parameters (VacuumGate canonical, 2026-04-30)
+    TRACK_LENGTH: float = 37000.0  # m (37 km, was 28.7 km — VG revision)
+    TRACK_ANGLE_MIN: float = 15.0  # degrees (patent envelope)
+    TRACK_ANGLE_MAX: float = 45.0  # degrees (patent envelope)
+    TRACK_ANGLE_DEFAULT: float = 15.0  # degrees (canonical operating point)
+    TUBE_PRESSURE_RATIO: float = 0.05  # Fraction of atmospheric (patent envelope min)
+    MAX_ACCELERATION_G: float = 4.0  # Maximum allowed g-force (VG sustained)
 
-    # Exit Conditions
-    EXIT_MACH_MIN: float = 3.5
-    EXIT_MACH_MAX: float = 5.0
-    EXIT_MACH_DEFAULT: float = 3.5
+    # Exit Conditions (VacuumGate canonical Mach 5)
+    EXIT_MACH_MIN: float = 3.0  # patent envelope
+    EXIT_MACH_MAX: float = 5.0  # patent envelope
+    EXIT_MACH_DEFAULT: float = 5.0  # was 3.5 — VG revision
 
     # Gryphon Spacecraft
     GRYPHON_MASS_DRY: float = 15000.0  # kg
@@ -103,7 +115,7 @@ class SystemParams:
 
     @property
     def exit_velocity_default(self) -> float:
-        """Default exit velocity in m/s (Mach 3.5 at sea level)."""
+        """Default exit velocity in m/s (Mach 5 at sea level, VG canonical)."""
         return self.EXIT_MACH_DEFAULT * Constants.A0
 
     @property
