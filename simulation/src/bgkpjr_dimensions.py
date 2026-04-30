@@ -430,7 +430,11 @@ def derive_check(tolerance: float = 0.01, verbose: bool = True) -> dict:
     results["coil_count_total"] = coil_count
 
     # ── Solar sail acceleration (derived, not asserted) ───────────────
-    a_sail_si = (2 * SOLAR_PRESSURE_1AU * KEPLER.SAIL_AREA_M2 * KEPLER.REFLECTIVITY) / KEPLER.SAIL_MASS_KG
+    # Correct radiation-pressure formula for a flat sail face-on to Sun:
+    #   F = (1 + η) · P · A    (absorbed photon + reflected photon momentum)
+    # NOT 2·η·P·A. The (1+η) form is exact for η=1 (perfect reflector → 2PA)
+    # and η=0 (perfect absorber → PA). See solar_sail.py for full derivation.
+    a_sail_si = ((1 + KEPLER.REFLECTIVITY) * SOLAR_PRESSURE_1AU * KEPLER.SAIL_AREA_M2) / KEPLER.SAIL_MASS_KG
     results["kepler_acceleration_mmps2"] = round(a_sail_si * 1000, 4)
 
     # ── Rail Δv as fraction of total to LEO ───────────────────────────
@@ -527,7 +531,7 @@ def export_for_typescript() -> dict:
             "deployAltKm": KEPLER.DEPLOY_ALTITUDE_KM,
             "solarPressurePa": SOLAR_PRESSURE_1AU,
             "nominalDvMmps": round(
-                (2 * SOLAR_PRESSURE_1AU * KEPLER.SAIL_AREA_M2 * KEPLER.REFLECTIVITY)
+                ((1 + KEPLER.REFLECTIVITY) * SOLAR_PRESSURE_1AU * KEPLER.SAIL_AREA_M2)
                 / KEPLER.SAIL_MASS_KG * 1000, 3),
         },
         "MISSION": {
