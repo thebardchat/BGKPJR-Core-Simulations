@@ -1,0 +1,73 @@
+name: Dimensional Integrity Check
+
+# Runs the canonical source-of-truth derive_check() on every push and
+# pull request. Any commit that introduces a kinematic, mass, or patent-
+# envelope violation in `bgkpjr_dimensions.py` fails CI.
+#
+# This is the guardrail against the kind of multi-baseline drift that
+# the 2026-04-30 pre-Lukens audit discovered (28.7 km / Mach 3.5 / 23 sec /
+# 3.9 G — four mutually-incompatible constants). Future drift now caught
+# automatically before merge.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'simulation/src/bgkpjr_dimensions.py'
+      - 'simulation/src/constants.py'
+      - '.github/workflows/dimensions-check.yml'
+  pull_request:
+    paths:
+      - 'simulation/src/bgkpjr_dimensions.py'
+      - 'simulation/src/constants.py'
+  workflow_dispatch:
+
+jobs:
+  derive-check:
+    name: Run derive_check() against canonical SoT
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run dimensional cross-checks
+        run: |
+          cd "${{ github.workspace }}"
+          python simulation/src/bgkpjr_dimensions.py
+
+      - name: Verify constants.py imports cleanly from SoT
+        run: |
+          cd "${{ github.workspace }}"
+          python -c "
+          from simulation.src import constants
+          from simulation.src import bgkpjr_dimensions as sot
+          p = constants.SystemParams()
+          # Spot-check that constants.py mirrors the SoT (not drifted)
+          assert p.TRACK_LENGTH == sot.RAIL.LENGTH_M, \
+              f'DRIFT: constants.TRACK_LENGTH={p.TRACK_LENGTH} != SoT.RAIL.LENGTH_M={sot.RAIL.LENGTH_M}'
+          assert p.EXIT_MACH_DEFAULT == sot.RAIL.EXIT_MACH, \
+              f'DRIFT: constants.EXIT_MACH_DEFAULT != SoT.RAIL.EXIT_MACH'
+          assert p.MAX_ACCELERATION_G == sot.RAIL.PEAK_G, \
+              f'DRIFT: constants.MAX_ACCELERATION_G != SoT.RAIL.PEAK_G'
+          assert p.GRYPHON_MASS_DRY == sot.GRYPHON.DRY_MASS_KG, \
+              f'DRIFT: constants.GRYPHON_MASS_DRY != SoT.GRYPHON.DRY_MASS_KG'
+          assert p.KEPLER_AREA == sot.KEPLER.SAIL_AREA_M2, \
+              f'DRIFT: constants.KEPLER_AREA != SoT.KEPLER.SAIL_AREA_M2'
+          assert p.DELTA_V_TO_LEO == sot.MISSION.DELTA_V_TO_LEO_TOTAL_MS, \
+              f'DRIFT: constants.DELTA_V_TO_LEO != SoT.MISSION.DELTA_V_TO_LEO_TOTAL_MS'
+          print('OK — constants.py is in lock-step with bgkpjr_dimensions.py')
+          "
+
+      - name: Print canonical baseline summary
+        run: |
+          echo '## Canonical baseline this commit closes against' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          python simulation/src/bgkpjr_dimensions.py 2>&1 | tail -16 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
