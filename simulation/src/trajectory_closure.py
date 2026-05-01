@@ -81,21 +81,30 @@ def isa_pressure(h_m: float) -> float:
 
 @dataclass(frozen=True)
 class PodConfig:
-    """Pod configuration for trajectory simulation. Defaults match
-    canonical Manna-H spec from SoT."""
-    name: str = "Manna-H (canonical)"
-    gross_mass_kg: float = 4200.0           # SoT-derived (PODS.H.massKg)
-    payload_mass_kg: float = 3276.0         # 78% payload fraction
+    """Pod configuration for trajectory simulation.
+
+    Default config is the SUB-ORBITAL CATCH closure case validated on
+    2026-04-30 (45° rail, 900 kg propellant @ 80 kN, 166 km apogee).
+    The pod boosts to high suborbital apogee where the Tug catches it.
+
+    The earlier "pod self-circularizes to LEO" architecture (250 kN /
+    800 kg / 100 sec burn config) does NOT close — pod can't reach
+    400 km from Mach 5 rail exit no matter the propellant load.
+    See data/trajectory-closure/FINDING-2026-04-30.md.
+    """
+    name: str = "Manna-H (sub-orbital catch, validated)"
+    gross_mass_kg: float = 4300.0           # 3400 dry + 900 prop
+    payload_mass_kg: float = 2800.0         # ~65% effective payload
     diameter_m: float = 1.8                 # SoT.MANNA_POD.DIAMETER_M
     nose_drag_coeff: float = 0.30           # blunt-body Cd at Mach 5
-    second_stage_thrust_n: float = 250_000.0  # nominal pod 2nd-stage motor
-    second_stage_isp_s: float = 320.0       # solid motor (storable)
-    second_stage_propellant_kg: float = 800.0
-    second_stage_burn_time_s: float = 100.0  # ≈ propellant_kg × g0 × Isp / thrust
-    rail_inclination_deg: float = _SoT.RAIL.INCLINATION_DEG
+    second_stage_thrust_n: float = 80_000.0  # 80 kN — modest thrust
+    second_stage_isp_s: float = 320.0        # storable bipropellant
+    second_stage_propellant_kg: float = 900.0
+    second_stage_burn_time_s: float = 35.3   # 900 × 9.81 × 320 / 80000
+    rail_inclination_deg: float = 45.0       # max patent envelope (sim-validated)
     exit_velocity_ms: float = _SoT.RAIL.EXIT_VELOCITY_MS
-    target_orbit_alt_km: float = _SoT.MISSION.LEO_ALTITUDE_KM
-    target_orbit_v_ms: float = _SoT.MISSION.LEO_VELOCITY_MS
+    target_orbit_alt_km: float = 166.0       # SUB-ORBITAL apogee (Tug catches here)
+    target_orbit_v_ms: float = 0.0           # apogee = vertical-velocity-zero point
 
 
 # ═══════════════════════════════════════════════════════════════════════
